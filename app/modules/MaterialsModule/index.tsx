@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { FileText, Calendar, MessageSquare, Play, Clock } from "lucide-react";
+import { useNavigate } from "react-router";
 
 interface Material {
   id: string;
@@ -40,6 +41,7 @@ interface MaterialsModuleProps {
 export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
   materials,
 }) => {
+  const navigate = useNavigate();
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("id-ID", {
       year: "numeric",
@@ -50,13 +52,16 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
 
   return (
     <main className="flex-1 w-full">
-      <section className="w-full h-full py-12 md:py-24 lg:py-32">
+      <section className="w-full h-full py-12 md:py-10 lg:py-20">
         <div className="px-4 md:px-6 w-full">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
+          <div className="mx-auto">
+            <div className="flex justify-between mb-12">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
-                Your Materials
+               Materi Kamu
               </h2>
+              <Button variant={'secondary'} onClick={() => navigate('/menu/materi/tambah')} size="sm">
+                Tambahkan Materi
+              </Button>
             </div>
 
             {materials.length === 0 ? (
