@@ -112,17 +112,17 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                       </div>
 
                       <div className="flex gap-2">
-                        <Button className="flex-1" size="sm">
+                        <Button  className="flex-1" size="sm">
                           <Play className="h-3 w-3 mr-2" />
                           Flashcard
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button size="sm">
                           <FileText className="h-3 w-3 mr-2" />
                           Tanya Jawab
                         </Button>
                       </div>
                       <div className="mt-2 w-full">
-                        <Button variant="outline" size="sm" className="!w-full">
+                        <Button size="sm" className="!w-full">
                           <FileText className="h-3 w-3 mr-2" />
                           Rangkuman
                         </Button>
