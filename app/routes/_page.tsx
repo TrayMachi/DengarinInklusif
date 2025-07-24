@@ -1,5 +1,6 @@
 import { Home } from "lucide-react";
 import { ThemeProvider } from "~/components/context/theme-provider";
+import { AuthProvider } from "~/components/context/auth-context";
 import { Outlet, type LoaderFunctionArgs } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
 import { Navbar } from "~/components/Navbar";
@@ -30,14 +31,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Index() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <main className="text-black dark:text-white">
-        <Navbar />
-        <main className="max-w-[1920px] mx-auto min-h-screen overflow-x-hidden flex flex-col items-center">
-          <Outlet />
-          <Toaster />
+      <AuthProvider>
+        <main className="text-black dark:text-white">
+          <Navbar />
+          <main className="max-w-[1920px] mx-auto min-h-screen overflow-x-hidden flex flex-col items-center">
+            <Outlet />
+            <Toaster />
+          </main>
+          <Footer />
         </main>
-        <Footer />
-      </main>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

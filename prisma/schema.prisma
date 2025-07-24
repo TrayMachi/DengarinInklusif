@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output = "../app/lib/generated"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Material {
+  id                String   @id @default(cuid())
+  title             String
+  code              String   @unique
+  email             String   @unique
+  fileUrl           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  materialContent   MaterialContent?
+  flashcard         Flashcard?
+  userQuestion      UserQuestion[]
+}
+
+model MaterialContent {
+  id                String   @id @default(cuid())
+  materialId        String  @unique
+  material          Material @relation(fields: [materialId], references: [id])
+  content           String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Flashcard {
+  id                String   @id @default(cuid()) 
+  flashcardPage     FlashcardPage[]
+  materialId        String @unique
+  material          Material @relation(fields: [materialId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model FlashcardPage {
+  id                String   @id @default(cuid())
+  flashcardId       String
+  flashcard         Flashcard @relation(fields: [flashcardId], references: [id])
+  question          String
+  answer            String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model UserQuestion {
+  id                String   @id @default(cuid())
+  materialId        String
+  material          Material @relation(fields: [materialId], references: [id])
+  question          String
+  answer            String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
