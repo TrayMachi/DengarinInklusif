@@ -30,11 +30,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-  const mediaRecorderRef = useRef(null);
-  const mediaStream = useRef(null);
-  const chunksRef = useRef([]);
+  const mediaRecorderRef = useRef<MediaRecorder>(null);
+  const mediaStream = useRef<MediaStream>(null);
+  const chunksRef = useRef<Blob[]>([]);
   const [recording, setRecording] = useState(false);
-  const [audioURL, setAudioURL] = useState(null);
   const [isStarting, setIsStarting] = useState<boolean>(false);
 
   const playBeep = () => {
@@ -48,7 +47,7 @@ export default function Index() {
   };
 
   useEffect(() => {
-    const handleKeyDown = async (e) => {
+    const handleKeyDown = async (e: any) => {
       if (e.code === "Space" && !recording && !isStarting) {
         setIsStarting(true);
         try {
@@ -66,7 +65,6 @@ export default function Index() {
           mediaRecorder.onstop = () => {
             const blob = new Blob(chunksRef.current, { type: "audio/webm" });
             const url = URL.createObjectURL(blob);
-            setAudioURL(url);
             chunksRef.current = [];
           };
 
@@ -86,11 +84,11 @@ export default function Index() {
       }
     };
 
-    const handleKeyUp = (e) => {
+    const handleKeyUp = (e: any) => {
       if (e.code === "Space" && recording) {
         // ⏳ Delay 500ms sebelum stop rekaman
         setTimeout(() => {
-          mediaStream.current.getTracks().forEach((track) => track.stop());
+          mediaStream.current?.getTracks().forEach((track) => track.stop());
           mediaRecorderRef.current?.stop();
           setRecording(false);
         }, 500);
