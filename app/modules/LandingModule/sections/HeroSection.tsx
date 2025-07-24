@@ -6,11 +6,11 @@ export const HeroSection = () => {
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
       <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-6 text-center">
+        <div className="flex flex-col items-center space-y-8 text-center">
           <Badge variant="secondary" className="px-4 py-2">
             🎧 Audio-First Learning Platform
           </Badge>
-          <div className="space-y-4">
+          <div className="space-y-8 py-2">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
               Personalized Learning for
               <br />
@@ -22,7 +22,7 @@ export const HeroSection = () => {
               conversion designed for grades SD through SMA.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 py-2">
             <Button size="lg" className="h-12 px-8">
               Start Learning
               <span className="sr-only">

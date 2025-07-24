@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "~/components/ui/navigation-menu";
+import { ThemeToggler } from "./ThemeToggler";
 
 export const Navbar = () => {
   return (
@@ -73,6 +74,7 @@ export const Navbar = () => {
           </NavigationMenu>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <ThemeToggler />
           <Button variant="ghost" size="sm">
             Login
           </Button>
