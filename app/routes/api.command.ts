@@ -11,11 +11,22 @@ export interface AudioCommandResponse {
   error?: string;
 }
 
-const MODEL = 'gemini-2.0-flash-001';
+const MODEL = "gemini-2.0-flash-001";
 
 const COMMAND_MANUAL = `
 Available Commands:
-"navigate [page_code]" - Navigate to page with code page_code
+Command | Description
+-------------
+"navigate [page_code]" | Navigate to page with code page_code
+
+Available page_code values:
+Code | Keyword / Description
+-----------------------
+lanpage | Landing page
+menu | Menu, dashboard, main page, beranda, or halaman utama
+material |  Material, materi, halaman utama materi, or pelajaran
+material_detail <code> | Material with code <code> or materi kode <code>
+settings | Settings, pengaturan, preferences, preferensi, or atur akun
 `;
 
 interface ProcessedCommand {
@@ -23,7 +34,6 @@ interface ProcessedCommand {
   description: string;
 }
 
-// Function to transcribe audio using Google Speech-to-Text
 async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
   try {
     const audioBytes = bufferToBase64(audioBuffer);
@@ -59,16 +69,18 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 
 // Function to process natural language command using Gemini
 async function processCommandWithGemini(
-  transcription: string
+  transcription: string,
+  pageCode: string
 ): Promise<ProcessedCommand> {
   try {
     const prompt = `
 You are a command interpreter. Convert the following natural language request into a structured command.
 
-Available Commands Manual:
 ${COMMAND_MANUAL}
 
 User Request: "${transcription}"
+
+Current Page Code: "${pageCode}" 
 
 Please respond with a JSON object containing:
 1. "command" - The exact command that should be executed (from the manual above)
@@ -88,8 +100,7 @@ Respond only with valid JSON.
       contents: prompt,
     });
 
-    const response = await result.response;
-    const text = response.text();
+    const text = result.text || "";
 
     try {
       const parsedResponse = JSON.parse(text);
@@ -137,18 +148,22 @@ async function generateTTSAudio(text: string): Promise<Buffer> {
   }
 }
 
-export async functtion action ({ request }: ActionFunctionArgs): Promise {
+export async function action({ request }: ActionFunctionArgs) {
   if (request.method !== "POST") {
-    return JSON.stringify({ error: "Method not allowed" }, { status: 405 });
+    return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
 
   try {
     // Parse multipart form data
     const formData = await request.formData();
     const audioFile = formData.get("audio") as File;
+    const pageCode = formData.get("pageCode") as string;
 
     if (!audioFile) {
-      return json({ error: "No audio file provided" }, { status: 400 });
+      return Response.json(
+        { error: "Audio file is required" },
+        { status: 400 }
+      );
     }
 
     // Convert File to Buffer
@@ -162,20 +177,12 @@ export async functtion action ({ request }: ActionFunctionArgs): Promise {
       audioBuffer.length
     );
 
-    // Step 1: Transcribe audio using Google Speech-to-Text
-    console.log("Step 1: Transcribing audio...");
     const transcription = await transcribeAudio(audioBuffer);
-    console.log("Transcription:", transcription);
-
-    // Step 2: Process command with Gemini AI
-    console.log("Step 2: Processing command with AI...");
-    const processedCommand = await processCommandWithGemini(transcription);
-    console.log("Processed command:", processedCommand);
-
-    // Step 3: Generate TTS audio for the description
-    console.log("Step 3: Generating TTS audio...");
+    const processedCommand = await processCommandWithGemini(
+      transcription,
+      pageCode
+    );
     const ttsAudioBuffer = await generateTTSAudio(processedCommand.description);
-    console.log("TTS audio generated, size:", ttsAudioBuffer.length);
 
     // Step 4: Return response with command and audio
     const response = {
@@ -187,11 +194,9 @@ export async functtion action ({ request }: ActionFunctionArgs): Promise {
       audioFormat: "mp3",
     };
 
-    return json(response);
+    return Response.json(response, { status: 200 });
   } catch (error) {
-    console.error("API Error:", error);
-
-    return json(
+    return Response.json(
       {
         success: false,
         error:
@@ -199,13 +204,13 @@ export async functtion action ({ request }: ActionFunctionArgs): Promise {
         command: "error",
         description: "An error occurred while processing your request.",
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     );
   }
-};
+}
 
 function bufferToBase64(buffer: Buffer): string {
   return buffer.toString("base64");
 }
-
-
