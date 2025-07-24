@@ -1,10 +1,11 @@
 import { Home } from "lucide-react";
 import { ThemeProvider } from "~/components/context/theme-provider";
 import { AuthProvider } from "~/components/context/auth-context";
-import { Outlet, type LoaderFunctionArgs } from "react-router";
+import { Outlet, redirect, type LoaderFunctionArgs } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
 import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
+import { isAuthenticatedServer } from "~/utils/auth.server";
 import { useEffect, useRef, useState } from "react";
 
 export function ErrorBoundary() {
@@ -26,6 +27,14 @@ export function ErrorBoundary() {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const authenticated = await isAuthenticatedServer(request);
+  const pathname = url.pathname;
+
+  if (pathname !== "/" && pathname !== "/404" && !authenticated) {
+    return redirect("/");
+  }
+
   return null;
 }
 
