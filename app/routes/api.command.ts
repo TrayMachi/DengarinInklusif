@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import type { ActionFunctionArgs } from "react-router";
 import { llm, speechClient, ttsClient } from "~/utils/ai";
 
@@ -151,6 +152,13 @@ async function generateTTSAudio(text: string): Promise<Buffer> {
 export async function action({ request }: ActionFunctionArgs) {
   if (request.method !== "POST") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
+  }
+
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    return Response.json(
+      { error: "Google credentials not configured" },
+      { status: 500 }
+    );
   }
 
   try {
