@@ -1,7 +1,12 @@
 import { Home } from "lucide-react";
 import { ThemeProvider } from "~/components/context/theme-provider";
 import { AuthProvider } from "~/components/context/auth-context";
-import { Outlet, redirect, type LoaderFunctionArgs } from "react-router";
+import {
+  Outlet,
+  redirect,
+  useLoaderData,
+  type LoaderFunctionArgs,
+} from "react-router";
 import { Toaster } from "~/components/ui/sonner";
 import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
@@ -35,10 +40,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/");
   }
 
-  return null;
+  return { pageCode: "lanpage" };
 }
 
 export default function Index() {
+  const { pageCode } = useLoaderData<{ pageCode: string }>();
   const mediaRecorderRef = useRef<MediaRecorder>(null);
   const mediaStream = useRef<MediaStream>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -53,6 +59,39 @@ export default function Index() {
     oscillator.connect(ctx.destination);
     oscillator.start();
     oscillator.stop(ctx.currentTime + 0.2);
+  };
+
+  const sendAudioToCommandAPI = async (blob: Blob, pageCode: string) => {
+    const formData = new FormData();
+    formData.append("audio", blob, "command.webm");
+    formData.append("pageCode", pageCode);
+
+    try {
+      const response = await fetch("/api/command", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        console.error("Command API error:", data.error);
+        return;
+      }
+
+      console.log("✅ Transcription:", data.transcription);
+      console.log("✅ Command:", data.command);
+      console.log("✅ Description:", data.description);
+
+      // 🔊 Play the returned TTS audio
+      if (data.ttsAudio) {
+        const audio = new Audio(`data:audio/mp3;base64,${data.ttsAudio}`);
+        audio.play();
+      }
+    } catch (error) {
+      console.error("Error sending audio:", error);
+    }
   };
 
   useEffect(() => {
@@ -73,8 +112,9 @@ export default function Index() {
 
           mediaRecorder.onstop = () => {
             const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-            const url = URL.createObjectURL(blob);
             chunksRef.current = [];
+
+            sendAudioToCommandAPI(blob, pageCode);
           };
 
           mediaRecorder.onstart = () => {

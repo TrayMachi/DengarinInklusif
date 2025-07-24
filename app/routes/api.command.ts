@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import type { ActionFunctionArgs } from "react-router";
 import { llm, speechClient, ttsClient } from "~/utils/ai";
 
@@ -103,7 +104,20 @@ Respond only with valid JSON.
     const text = result.text || "";
 
     try {
-      const parsedResponse = JSON.parse(text);
+      // Extract JSON from markdown code blocks if present
+      let jsonText = text.trim();
+
+      // Check if response is wrapped in markdown code blocks
+      if (jsonText.startsWith("```json") || jsonText.startsWith("```")) {
+        const startMarker = jsonText.indexOf("{");
+        const endMarker = jsonText.lastIndexOf("}");
+
+        if (startMarker !== -1 && endMarker !== -1) {
+          jsonText = jsonText.substring(startMarker, endMarker + 1);
+        }
+      }
+
+      const parsedResponse = JSON.parse(jsonText);
       return {
         command: parsedResponse.command || "unknown_command",
         description: parsedResponse.description || "Command processing failed",
@@ -151,6 +165,13 @@ async function generateTTSAudio(text: string): Promise<Buffer> {
 export async function action({ request }: ActionFunctionArgs) {
   if (request.method !== "POST") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
+  }
+
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    return Response.json(
+      { error: "Google credentials not configured" },
+      { status: 500 }
+    );
   }
 
   try {
