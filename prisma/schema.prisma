@@ -33,6 +33,7 @@ model MaterialContent {
   materialId        String  @unique
   material          Material @relation(fields: [materialId], references: [id])
   content           String
+  description       String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

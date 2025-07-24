@@ -20,6 +20,7 @@ interface Material {
   updatedAt: Date;
   materialContent?: {
     content: string;
+  description: string;
   };
   flashcard?: {
     flashcardPage: Array<{
@@ -91,7 +92,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                         {material.title}
                       </CardTitle>
                       <CardDescription className="line-clamp-3">
-                        {material.materialContent?.content ||
+                        {material.materialContent?.description ||
                           "No description available"}
                       </CardDescription>
                     </CardHeader>
@@ -99,13 +100,6 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                     <CardContent className="pt-0">
                       <div className="flex items-center justify-between mb-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-4">
-                          <div className="flex items-center">
-                            <FileText className="h-3 w-3 mr-1" />
-                            <span>
-                              {material.flashcard?.flashcardPage?.length || 0}{" "}
-                              Cards
-                            </span>
-                          </div>
                           <div className="flex items-center">
                             <MessageSquare className="h-3 w-3 mr-1" />
                             <span>{material._count.userQuestion} Q&A</span>
@@ -118,13 +112,19 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                       </div>
 
                       <div className="flex gap-2">
-                        <Button className="flex-1" size="sm">
+                        <Button  className="flex-1" size="sm">
                           <Play className="h-3 w-3 mr-2" />
-                          Study
+                          Flashcard
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button size="sm">
                           <FileText className="h-3 w-3 mr-2" />
-                          View
+                          Tanya Jawab
+                        </Button>
+                      </div>
+                      <div className="mt-2 w-full">
+                        <Button size="sm" className="!w-full">
+                          <FileText className="h-3 w-3 mr-2" />
+                          Rangkuman
                         </Button>
                       </div>
                     </CardContent>
