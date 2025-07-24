@@ -5,9 +5,9 @@ import { FileText, GraduationCap, Mic, Scan } from "lucide-react";
 
 export const HeroSection = () => {
   return (
-    <section className="w-full h-fit py-12 md:py-24 lg:py-32 xl:py-40">
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-8 text-center">
+    <section className="w-full h-fit py-12 md:py-24 lg:py-32 xl:py-40 relative">
+      <div className="px-4 md:px-6 w-full">
+        <div className="flex flex-col items-center space-y-8 text-center w-full">
           <Badge
             variant="secondary"
             className="px-4 md:px-6 py-3 text-[14px] md:text-xl font-bold"
