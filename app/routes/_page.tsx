@@ -1,5 +1,5 @@
 import { Home } from "lucide-react";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from '~/components/context/theme-provider';
 import { Outlet, type LoaderFunctionArgs } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
 
