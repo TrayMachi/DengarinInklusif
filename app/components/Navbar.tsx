@@ -35,9 +35,17 @@ export const Navbar = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink
                   className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-                  href="/about"
+                  href="/materials"
                 >
-                  ...
+                  Materials
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                  href="/latihan"
+                >
+                  Latihan
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
@@ -46,7 +54,7 @@ export const Navbar = () => {
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <ThemeToggler />
           <GoogleLoginButton variant="ghost" size="sm" />
-          <Button size="sm">Get Started</Button>
+          {/* <Button size="sm">Get Started</Button> */}
         </div>
       </div>
     </header>
