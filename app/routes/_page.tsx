@@ -5,6 +5,7 @@ import { Outlet, type LoaderFunctionArgs } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
 import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
+import { useEffect, useRef, useState } from "react";
 
 export function ErrorBoundary() {
   return (
@@ -29,6 +30,82 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
+  const mediaRecorderRef = useRef(null);
+  const mediaStream = useRef(null);
+  const chunksRef = useRef([]);
+  const [recording, setRecording] = useState(false);
+  const [audioURL, setAudioURL] = useState(null);
+  const [isStarting, setIsStarting] = useState<boolean>(false);
+
+  const playBeep = () => {
+    const ctx = new AudioContext();
+    const oscillator = ctx.createOscillator();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(1000, ctx.currentTime);
+    oscillator.connect(ctx.destination);
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + 0.2);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = async (e) => {
+      if (e.code === "Space" && !recording && !isStarting) {
+        setIsStarting(true);
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          const mediaRecorder = new MediaRecorder(stream);
+
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+              chunksRef.current.push(e.data);
+            }
+          };
+
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+            const url = URL.createObjectURL(blob);
+            setAudioURL(url);
+            chunksRef.current = [];
+          };
+
+          mediaRecorder.onstart = () => {
+            setRecording(true);
+            setIsStarting(false);
+            playBeep();
+          };
+
+          mediaRecorderRef.current = mediaRecorder;
+          mediaStream.current = stream;
+          mediaRecorderRef.current.start();
+        } catch (err) {
+          alert("Microphone access denied");
+          setIsStarting(false);
+        }
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (e.code === "Space" && recording) {
+        // ⏳ Delay 500ms sebelum stop rekaman
+        setTimeout(() => {
+          mediaStream.current.getTracks().forEach((track) => track.stop());
+          mediaRecorderRef.current?.stop();
+          setRecording(false);
+        }, 500);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [recording, isStarting]);
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <AuthProvider>
