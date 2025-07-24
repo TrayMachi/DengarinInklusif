@@ -20,7 +20,7 @@ interface Material {
   updatedAt: Date;
   materialContent?: {
     content: string;
-  description: string;
+    description: string;
   };
   flashcard?: {
     flashcardPage: Array<{
@@ -112,7 +112,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                       </div>
 
                       <div className="flex gap-2">
-                        <Button  className="flex-1" size="sm">
+                        <Button className="flex-1" size="sm">
                           <Play className="h-3 w-3 mr-2" />
                           Flashcard
                         </Button>
@@ -122,7 +122,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                         </Button>
                       </div>
                       <div className="mt-2 w-full">
-                        <Button size="sm" className="!w-full">
+                        <Button variant={'secondary'} size="sm" className="!w-full">
                           <FileText className="h-3 w-3 mr-2" />
                           Rangkuman
                         </Button>
