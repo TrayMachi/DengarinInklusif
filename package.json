@@ -70,6 +70,7 @@
     "zod": "^4.0.8"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.10",
     "@react-router/dev": "^7.7.0",
     "@tailwindcss/vite": "^4.1.4",
     "@types/node": "^20",
