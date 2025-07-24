@@ -57,6 +57,8 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
         ?.map((result) => result.alternatives?.[0]?.transcript)
         .join("\n") || "";
 
+    console.log(transcription);
+
     if (!transcription) {
       throw new Error("No transcription received");
     }
@@ -71,7 +73,7 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 // Function to process natural language command using Gemini
 async function processCommandWithGemini(
   transcription: string,
-  pageCode: string
+  pageCode: string,
 ): Promise<ProcessedCommand> {
   try {
     const prompt = `
@@ -167,13 +169,6 @@ export async function action({ request }: ActionFunctionArgs) {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
 
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    return Response.json(
-      { error: "Google credentials not configured" },
-      { status: 500 }
-    );
-  }
-
   try {
     // Parse multipart form data
     const formData = await request.formData();
@@ -183,7 +178,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!audioFile) {
       return Response.json(
         { error: "Audio file is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -195,13 +190,13 @@ export async function action({ request }: ActionFunctionArgs) {
       "Processing audio file:",
       audioFile.name,
       "Size:",
-      audioBuffer.length
+      audioBuffer.length,
     );
 
     const transcription = await transcribeAudio(audioBuffer);
     const processedCommand = await processCommandWithGemini(
       transcription,
-      pageCode
+      pageCode,
     );
     const ttsAudioBuffer = await generateTTSAudio(processedCommand.description);
 
@@ -227,7 +222,7 @@ export async function action({ request }: ActionFunctionArgs) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
