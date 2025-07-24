@@ -1,5 +1,7 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { redirect } from "react-router";
+import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 
 export interface ServerAuthUser {
   uid: string;
@@ -7,6 +9,31 @@ export interface ServerAuthUser {
   displayName: string | null;
   photoURL: string | null;
 }
+
+// Initialize Firebase Admin SDK
+const initializeFirebaseAdmin = () => {
+  if (getApps().length === 0) {
+    try {
+      if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+        const serviceAccount = JSON.parse(
+          process.env.FIREBASE_SERVICE_ACCOUNT_KEY
+        );
+        initializeApp({
+          credential: cert(serviceAccount),
+          projectId: process.env.FIREBASE_PROJECT_ID,
+        });
+      } else {
+        console.warn(
+          "Firebase Admin SDK: No valid credentials found. Please check environment variables."
+        );
+      }
+    } catch (error) {
+      console.error("Error initializing Firebase Admin SDK:", error);
+    }
+  }
+};
+
+initializeFirebaseAdmin();
 
 /**
  * Get Firebase ID token from request headers
@@ -34,8 +61,7 @@ export const getIdTokenFromRequest = (request: Request): string | null => {
 };
 
 /**
- * Verify Firebase ID token (placeholder - requires Firebase Admin SDK)
- * Note: In a real application, you would use Firebase Admin SDK to verify the token
+ * Verify Firebase ID token using Firebase Admin SDK
  * @param idToken Firebase ID token
  * @returns Promise<ServerAuthUser | null>
  */
@@ -43,22 +69,15 @@ export const verifyIdToken = async (
   idToken: string
 ): Promise<ServerAuthUser | null> => {
   try {
-    // This is a placeholder implementation
-    // In a real app, you would use Firebase Admin SDK:
-    //
-    // import { getAuth } from 'firebase-admin/auth';
-    // const decodedToken = await getAuth().verifyIdToken(idToken);
-    // return {
-    //   uid: decodedToken.uid,
-    //   email: decodedToken.email || null,
-    //   displayName: decodedToken.name || null,
-    //   photoURL: decodedToken.picture || null,
-    // };
+    const auth = getAuth();
+    const decodedToken = await auth.verifyIdToken(idToken);
 
-    console.warn(
-      "verifyIdToken: Firebase Admin SDK not implemented. This is a placeholder."
-    );
-    return null;
+    return {
+      uid: decodedToken.uid,
+      email: decodedToken.email || null,
+      displayName: decodedToken.name || null,
+      photoURL: decodedToken.picture || null,
+    };
   } catch (error) {
     console.error("Error verifying ID token:", error);
     return null;
