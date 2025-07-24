@@ -104,7 +104,20 @@ Respond only with valid JSON.
     const text = result.text || "";
 
     try {
-      const parsedResponse = JSON.parse(text);
+      // Extract JSON from markdown code blocks if present
+      let jsonText = text.trim();
+
+      // Check if response is wrapped in markdown code blocks
+      if (jsonText.startsWith("```json") || jsonText.startsWith("```")) {
+        const startMarker = jsonText.indexOf("{");
+        const endMarker = jsonText.lastIndexOf("}");
+
+        if (startMarker !== -1 && endMarker !== -1) {
+          jsonText = jsonText.substring(startMarker, endMarker + 1);
+        }
+      }
+
+      const parsedResponse = JSON.parse(jsonText);
       return {
         command: parsedResponse.command || "unknown_command",
         description: parsedResponse.description || "Command processing failed",
