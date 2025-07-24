@@ -1,11 +1,13 @@
 import { Home } from "lucide-react";
-import { ThemeProvider } from '~/components/context/theme-provider';
+import { ThemeProvider } from "~/components/context/theme-provider";
 import { Outlet, type LoaderFunctionArgs } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
+import { Navbar } from "~/components/Navbar";
+import { Footer } from "~/components/Footer";
 
 export function ErrorBoundary() {
   return (
-    <main className="bg-white text-black dark:bg-black dark:text-white">
+    <main className="bg-background text-foreground dark:bg-background dark:text-foreground">
       <main className="max-w-[1440px] mx-auto min-h-screen border-x-[2px] border-component-light-border dark:border-component-dark-border">
         <div className="h-screen flex items-center justify-center flex-col gap-4">
           <h1 className="text-3xl font-unbounded">Terjadi Kesalahan!</h1>
@@ -26,14 +28,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <main className="bg-component-light-frame text-black dark:bg-component-dark-frame dark:text-white">
-        <main className="pt-15  max-w-[1920px] mx-auto min-h-screen border-x-[2px] border-component-light-border dark:border-component-dark-border overflow-x-hidden flex flex-col">
+      <main className="text-black dark:text-white">
+        <Navbar />
+        <main className="max-w-[1920px] mx-auto min-h-screen overflow-x-hidden flex flex-col items-center">
           <Outlet />
           <Toaster />
         </main>
+        <Footer />
       </main>
     </ThemeProvider>
   );
