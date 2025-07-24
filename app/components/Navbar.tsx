@@ -9,6 +9,7 @@ import {
   NavigationMenuTrigger,
 } from "~/components/ui/navigation-menu";
 import { ThemeToggler } from "./ThemeToggler";
+import { GoogleLoginButton } from "./GoogleLoginButton";
 
 export const Navbar = () => {
   return (
@@ -67,9 +68,7 @@ export const Navbar = () => {
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <ThemeToggler />
-          <Button variant="ghost" size="sm">
-            Login
-          </Button>
+          <GoogleLoginButton variant="ghost" size="sm" />
           <Button size="sm">Get Started</Button>
         </div>
       </div>
