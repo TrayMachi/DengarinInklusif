@@ -33,7 +33,7 @@ export default function NotFoundPage() {
 
   return (
     <div className="flex flex-col gap-4 items-center justify-center px-4">
-      <img src="/404.webp" alt="404" className="w-30 h-39" />
+      <img src="/404.webp" alt="404"  />
       <h1 className="text-3xl text-center font-bold text-primary">
         Halaman Tidak Ditemukan
       </h1>
