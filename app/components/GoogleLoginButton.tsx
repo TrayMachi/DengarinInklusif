@@ -9,9 +9,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { LogIn, LogOut, User } from "lucide-react";
+import { LayoutDashboard, LogIn, LogOut, User } from "lucide-react";
 import { useAuth } from "~/components/context/auth-context";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 interface GoogleLoginButtonProps {
   variant?:
@@ -31,7 +32,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
   className = "",
 }) => {
   const { user, loading, signInWithGoogle, logout } = useAuth();
-
+  const navigate = useNavigate();
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
@@ -96,6 +97,10 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => navigate("/menu")} className="cursor-pointer">
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            <span>Menu</span>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>

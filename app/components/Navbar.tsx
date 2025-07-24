@@ -17,35 +17,16 @@ export const Navbar = () => {
             href="/"
             aria-label="Dengar Inklusif Home"
           >
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">
-                DI
-              </span>
-            </div>
+            <img
+              src="/LogoDengarinklusif.png"
+              alt="Dengar Inklusif Logo"
+              className="h-8 w-8"
+            />
+
             <span className="hidden font-bold text-xl sm:inline-block">
               Dengar Inklusif
             </span>
           </a>
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-                  href="/materials"
-                >
-                  Materials
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-                  href="/latihan"
-                >
-                  Latihan
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-6 md:justify-end">
           <ThemeToggler />
