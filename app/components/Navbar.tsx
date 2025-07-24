@@ -1,12 +1,8 @@
-import React from "react";
-import { Button } from "~/components/ui/button";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "~/components/ui/navigation-menu";
 import { ThemeToggler } from "./ThemeToggler";
 import { GoogleLoginButton } from "./GoogleLoginButton";
@@ -51,10 +47,9 @@ export const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+        <div className="flex flex-1 items-center justify-between space-x-6 md:justify-end">
           <ThemeToggler />
           <GoogleLoginButton variant="ghost" size="sm" />
-          {/* <Button size="sm">Get Started</Button> */}
         </div>
       </div>
     </header>
