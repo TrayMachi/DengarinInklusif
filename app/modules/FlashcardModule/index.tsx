@@ -39,16 +39,16 @@ export const FlashcardModule = () => {
 
   return (
     <div className="flex items-center justify-center h-[70vh]">
-      <Card className="w-full max-w-2xl mx-auto p-8 flex flex-col items-center justify-center shadow-xl">
+      <Card className="w-full max-w-2xl mx-auto p-8 flex flex-col items-center justify-center shadow-xl !gap-0">
         <CardHeader className="w-full text-center">
-          <CardTitle className="text-xl md:text-xl font-bold mb-4">
+          <CardTitle className="text-[16px] font-bold text-muted-foreground">
             {showAnswer
               ? "Jawaban"
               : `Pertanyaan ${current + 1} dari ${cards.length}`}
           </CardTitle>
         </CardHeader>
         <CardContent className="w-full flex flex-col items-center justify-center">
-          <div className="min-h-[120px] flex items-center justify-center text-xl md:text-2xl font-semibold mb-8">
+          <div className="min-h-[100px] flex items-center justify-center text-xl md:text-2xl font-semibold mb-8">
             {showAnswer ? card.answer : card.question}
           </div>
           {!showAnswer ? (
