@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -12,13 +12,9 @@ import {
   FileText,
   Calendar,
   MessageSquare,
-  Play,
   Clock,
-  Loader2,
-  RefreshCw,
 } from "lucide-react";
-import { useNavigate, useFetcher } from "react-router";
-import { getCurrentUser, type AuthUser } from "~/utils/auth.client";
+import { useNavigate } from "react-router";
 
 interface Material {
   id: string;
@@ -58,60 +54,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
   materials,
 }) => {
   const navigate = useNavigate();
-  const fetcher = useFetcher();
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filteredMaterials, setFilteredMaterials] = useState<Material[]>([]);
-  const [regeneratingFlashcards, setRegeneratingFlashcards] = useState<
-    string | null
-  >(null);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const user = await getCurrentUser();
-        setCurrentUser(user);
-
-        if (user?.email) {
-          const userMaterials = materials.filter(
-            (material) => material.email === user.email
-          );
-          setFilteredMaterials(userMaterials);
-        } else {
-          setFilteredMaterials([]);
-        }
-      } catch (error) {
-        console.error("Error loading user:", error);
-        setFilteredMaterials([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadUser();
-  }, [materials]);
-
-  useEffect(() => {
-    if (fetcher.state === "idle") {
-      setRegeneratingFlashcards(null);
-
-      if (fetcher.data?.success) {
-        console.log("Flashcards regenerated successfully!");
-      } else if (fetcher.data?.error) {
-        console.error("Error regenerating flashcards:", fetcher.data.error);
-      }
-    }
-  }, [fetcher.state, fetcher.data]);
-
-  const handleRegenerateFlashcards = (materialId: string) => {
-    setRegeneratingFlashcards(materialId);
-
-    const formData = new FormData();
-    formData.append("action", "regenerate-flashcards");
-    formData.append("materialId", materialId);
-
-    fetcher.submit(formData, { method: "POST" });
-  };
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("id-ID", {
       year: "numeric",
@@ -156,6 +99,9 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                   <Card
                     key={material.id}
                     className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                    onClick={() =>
+                      navigate(`/menu/materi/detail/${material.code}`)
+                    }
                   >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
@@ -188,55 +134,6 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                           <Clock className="h-3 w-3 mr-1" />
                           <span>Updated {formatDate(material.updatedAt)}</span>
                         </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button
-                          className="flex-1"
-                          size="sm"
-                          variant={"secondary"}
-                          onClick={() =>
-                            navigate(`/menu/materi/flashcard/${material.code}`)
-                          }
-                        >
-                          <Play className="h-3 w-3 mr-2" />
-                          Flashcard
-                        </Button>
-                        <Button size="sm" variant={"secondary"}>
-                          <FileText className="h-3 w-3 mr-2" />
-                          Tanya Jawab
-                        </Button>
-                      </div>
-                      <div className="mt-2 w-full">
-                        <Button
-                          onClick={() =>
-                            navigate(
-                              `/menu/materi/rangkuman/${material.code}`
-                            )
-                          }
-                          size="sm"
-                          className="!w-full"
-                        >
-                          <FileText className="h-3 w-3 mr-2" />
-                          Rangkuman
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            handleRegenerateFlashcards(material.id)
-                          }
-                          disabled={regeneratingFlashcards === material.id}
-                        >
-                          {regeneratingFlashcards === material.id ? (
-                            <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                          ) : (
-                            <RefreshCw className="h-3 w-3 mr-2" />
-                          )}
-                          {regeneratingFlashcards === material.id
-                            ? "Generating..."
-                            : "Regenerate"}
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
