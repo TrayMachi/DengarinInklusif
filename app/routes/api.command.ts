@@ -225,7 +225,7 @@ export async function action({ request }: ActionFunctionArgs) {
         success: false,
         error:
           error instanceof Error ? error.message : "Unknown error occurred",
-        command: "error",
+        command: "unknown_command",
         description: "An error occurred while processing your request.",
       },
       {

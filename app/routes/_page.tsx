@@ -57,6 +57,7 @@ function MainContent() {
   const matches = useMatches();
   const data = matches.at(-1)?.data;
   const { pageCode = "" } = (data as { pageCode?: string }) || {};
+  const pathname = matches.at(-1)?.pathname;
 
   let materials = {};
   if (
@@ -135,7 +136,7 @@ function MainContent() {
 
       const data = await response.json();
 
-      if (!data.success) {
+      if (!data.success && !data.command) {
         console.error("Command API error:", data.error);
         return;
       }
@@ -147,6 +148,8 @@ function MainContent() {
       const cmd = commandArr[0];
 
       if (cmd === "unknown_command") {
+        audioRef.current = new Audio("/unknown_command.mp3");
+        handlePlayAudio();
         return;
       }
 
@@ -158,6 +161,10 @@ function MainContent() {
 
       if (cmd === "navigate") {
         navigate(getRoute(arg1, arg2));
+      } else if (cmd === "ringkasan") {
+        navigate(pathname + "/rangkuman");
+      } else if (cmd === "back") {
+        navigate(-1);
       } else if (cmd === "flashcard_next") {
         console.log("flashcard_next - totalCards:", flashcard.totalCards);
         if (flashcard.totalCards > 0) {
