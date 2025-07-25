@@ -1,38 +1,17 @@
-interface Material {
-  id: string;
-  title: string;
-  code: string;
-  email: string;
-  fileUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
-  materialContent?: {
-    content: string;
-    description: string;
-  };
-  flashcard?: {
-    flashcardPage: Array<{
-      question: string;
-      answer: string;
-    }>;
-  };
-}
+import React from "react";
+import { useLoaderData } from "react-router";
+import type { FlashcardPage } from "./loader";
 
-interface FlashcardModuleProps {
-  material: Material;
-}
-
-export const FlashcardModule: React.FC<FlashcardModuleProps> = ({
-  material,
-}) => {
+export const Flashcard = () => {
+  const loaderData = useLoaderData<FlashcardPage[]>();
   return (
-    <main className="flex-1">
-      {material.flashcard?.flashcardPage?.map((flashcard) => (
-        <div key={flashcard.question}>
-          <h2>{flashcard.question}</h2>
-          <p>{flashcard.answer}</p>
+    <div>
+      {loaderData.map((page) => (
+        <div key={page.id}>
+          <h1>{page.question}</h1>
+          <p>{page.answer}</p>
         </div>
       ))}
-    </main>
+    </div>
   );
 };
