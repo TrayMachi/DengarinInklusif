@@ -57,9 +57,13 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
           <div className="mx-auto">
             <div className="flex justify-between mb-12">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
-               Materi Kamu
+                Materi Kamu
               </h2>
-              <Button variant={'secondary'} onClick={() => navigate('/menu/materi/tambah')} size="sm">
+              <Button
+                variant={"secondary"}
+                onClick={() => navigate("/menu/materi/tambah")}
+                size="sm"
+              >
                 Tambahkan Materi
               </Button>
             </div>
@@ -117,17 +121,24 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                       </div>
 
                       <div className="flex gap-2">
-                        <Button className="flex-1" size="sm">
+                        <Button
+                          className="flex-1"
+                          size="sm"
+                          variant={"secondary"}
+                          onClick={() =>
+                            navigate(`/menu/materi/flashcard/${material.code}`)
+                          }
+                        >
                           <Play className="h-3 w-3 mr-2" />
                           Flashcard
                         </Button>
-                        <Button size="sm">
+                        <Button size="sm" variant={"secondary"}>
                           <FileText className="h-3 w-3 mr-2" />
                           Tanya Jawab
                         </Button>
                       </div>
                       <div className="mt-2 w-full">
-                        <Button variant={'secondary'} size="sm" className="!w-full">
+                        <Button size="sm" className="!w-full">
                           <FileText className="h-3 w-3 mr-2" />
                           Rangkuman
                         </Button>
