@@ -394,7 +394,7 @@ export const MateriTambahkanModule = () => {
             <CardHeader>
               <CardTitle>Hasil Ekstraksi PDF</CardTitle>
               <CardDescription>
-                Teks berhasil diekstrak dari file PDF Anda
+                Materi berhasil diekstrak dari file PDF Anda
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -403,24 +403,6 @@ export const MateriTambahkanModule = () => {
                   <Label className="text-sm font-medium">Total Halaman:</Label>
                   <p className="text-sm text-muted-foreground">
                     {uploadState.extractedData.totalPages}
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Item Teks:</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {uploadState.extractedData.metadata.textItems}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  Teks yang Diekstrak:
-                </Label>
-                <div className="p-4 bg-muted/30 rounded-md max-h-64 overflow-y-auto">
-                  <p className="text-sm whitespace-pre-wrap">
-                    {uploadState.extractedData.extractedText ||
-                      "Tidak ada teks yang dapat diekstrak dari PDF ini."}
                   </p>
                 </div>
               </div>
