@@ -7,5 +7,8 @@ const MATERIAL_DETAIL_SUFF = ` Apakah Anda ingin memainkan flashcards, membuat u
 function getGreeting(pageCode: string) {
   if (pageCode === "lanpage") {
     return LANDING_PAGE_GREETINGS;
+  } else if (pageCode === "menu") {
+    return MENU_PAGE_GREETINGS;
+  } else if (pageCode === "material") {
   }
 }
