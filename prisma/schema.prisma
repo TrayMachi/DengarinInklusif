@@ -19,7 +19,7 @@ model Material {
   id                String   @id @default(cuid())
   title             String
   code              String   @unique
-  email             String   @unique
+  email             String
   fileUrl           String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
