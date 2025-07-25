@@ -168,6 +168,26 @@ body {
   --shadow-2xl: var(--shadow-2xl);
 }
 
+::-webkit-scrollbar {
+  width: 11px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background-color: var(--muted);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: #F2DBBF;
+  border-radius: var(--radius);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #f2dbbfd6;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

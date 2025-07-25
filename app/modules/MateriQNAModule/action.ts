@@ -73,6 +73,7 @@ Human: ${question}
 - If the question is not related to the material, gently redirect them back to the material
 - Keep your answers clear and concise
 - Use examples from the material when possible
+- Write your answer in Indonesian language
 
 AI:`;
 
