@@ -1,6 +1,6 @@
-import { readFileSync, writeFileSync } from "fs";
 import type { ActionFunctionArgs } from "react-router";
 import { llm, speechClient, ttsClient } from "~/utils/ai.server";
+import { getGreeting } from "~/utils/greetings";
 import { getCommands, type MaterialFetch } from "~/utils/prompts";
 
 export interface AudioCommandResponse {
@@ -189,7 +189,20 @@ export async function action({ request }: ActionFunctionArgs) {
       pageCode,
       materials,
     );
-    const ttsAudioBuffer = await generateTTSAudio(processedCommand.description);
+
+    let text: string;
+
+    console.log(processedCommand);
+    console.log(pageCode);
+    console.log(getGreeting(pageCode));
+
+    if (processedCommand.command === "read") {
+      text = getGreeting(pageCode) || "";
+    } else {
+      text = processedCommand.description;
+    }
+
+    const ttsAudioBuffer = await generateTTSAudio(text);
 
     // Step 4: Return response with command and audio
     const response = {

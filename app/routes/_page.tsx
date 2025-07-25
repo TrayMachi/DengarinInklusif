@@ -19,7 +19,8 @@ import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
 import { isAuthenticatedServer } from "~/utils/auth.server";
 import { useEffect, useRef, useState } from "react";
-import { getRoute, validateCommand } from "~/utils/navigation.client";
+import { getRoute } from "~/utils/navigation.client";
+import { match } from "assert";
 
 const HOLD_THRESHOLD = 300; // in ms
 const HOLD_OUT_DELAY = 300;
@@ -140,14 +141,14 @@ function MainContent() {
 
       const commandStr = data.command as string;
 
-      if (!validateCommand(commandStr)) {
-        console.error("Command error: Invalid command");
-        return;
-      }
-
       const commandArr = commandStr.split(" ");
 
       const cmd = commandArr[0];
+
+      if (cmd === "unknown_command") {
+        return;
+      }
+
       const arg1 = commandArr[1];
       const arg2 = commandArr.length > 2 ? commandArr[2] : "";
       const arg3 = commandArr.length > 3 ? commandArr[3] : "";
