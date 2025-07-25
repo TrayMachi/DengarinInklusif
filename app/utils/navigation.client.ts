@@ -29,6 +29,10 @@ export function validateCommand(commandStr: string): boolean {
     return true;
   }
 
+  if (command[0].startsWith("material_")) {
+    return true;
+  }
+
   return false;
 }
 

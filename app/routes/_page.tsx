@@ -59,12 +59,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 function MainContent() {
   const matches = useMatches();
   const data = matches.at(-1)?.data;
-  const { pageCode } = data as { pageCode: string };
+  const { pageCode = "" } = (data as { pageCode?: string }) || {};
 
   let materials = {};
-
-  if ("materials" in (data as any)) {
-    materials = (data as any).materials;
+  if (
+    data &&
+    typeof data === "object" &&
+    data !== null &&
+    "materials" in data
+  ) {
+    materials = (data as { materials: any }).materials;
   }
 
   const mediaRecorderRef = useRef<MediaRecorder>(null);
@@ -183,6 +187,14 @@ function MainContent() {
       } else if (cmd === "flashcard_show_question") {
         if (flashcard.totalCards > 0) {
           flashcard.showQuestionAction();
+        }
+      } else if (cmd === "material_next") {
+        if ((window as any).materialsModule?.nextPage) {
+          (window as any).materialsModule.nextPage();
+        }
+      } else if (cmd === "material_previous") {
+        if ((window as any).materialsModule?.previousPage) {
+          (window as any).materialsModule.previousPage();
         }
       }
 
