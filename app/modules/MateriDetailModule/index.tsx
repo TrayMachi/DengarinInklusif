@@ -91,7 +91,7 @@ export const MateriDetailModule = () => {
                   )}
                   {regenerating || fetcher.state === "submitting"
                     ? "Generating..."
-                    : "Regenerate"}
+                    : "Remake Flashcards"}
                 </Button>
                 <Button
                   size="sm"
@@ -105,10 +105,10 @@ export const MateriDetailModule = () => {
                   Flashcard
                 </Button>
                 <Button
-                  onClick={() => navigate(`/menu/materi/${material.code}/qna`)}
                   size="sm"
                   variant="secondary"
                   className="flex-1"
+                  onClick={() => navigate(`/menu/materi/${material.code}/qna`)}
                 >
                   <FileText className="h-3 w-3 mr-2" />
                   Tanya Jawab
