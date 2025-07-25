@@ -19,7 +19,8 @@ import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
 import { isAuthenticatedServer } from "~/utils/auth.server";
 import { useEffect, useRef, useState } from "react";
-import { getRoute, validateCommand } from "~/utils/navigation.client";
+import { getRoute } from "~/utils/navigation.client";
+import { match } from "assert";
 
 const HOLD_THRESHOLD = 300; // in ms
 const HOLD_OUT_DELAY = 300;
@@ -58,12 +59,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 function MainContent() {
   const matches = useMatches();
   const data = matches.at(-1)?.data;
-  const { pageCode } = data as { pageCode: string };
+  const { pageCode = "" } = (data as { pageCode?: string }) || {};
 
   let materials = {};
-
-  if ("materials" in (data as any)) {
-    materials = (data as any).materials;
+  if (
+    data &&
+    typeof data === "object" &&
+    data !== null &&
+    "materials" in data
+  ) {
+    materials = (data as { materials: any }).materials;
   }
 
   const mediaRecorderRef = useRef<MediaRecorder>(null);
@@ -140,14 +145,14 @@ function MainContent() {
 
       const commandStr = data.command as string;
 
-      if (!validateCommand(commandStr)) {
-        console.error("Command error: Invalid command");
-        return;
-      }
-
       const commandArr = commandStr.split(" ");
 
       const cmd = commandArr[0];
+
+      if (cmd === "unknown_command") {
+        return;
+      }
+
       const arg1 = commandArr[1];
       const arg2 = commandArr.length > 2 ? commandArr[2] : "";
       const arg3 = commandArr.length > 3 ? commandArr[3] : "";
@@ -182,6 +187,14 @@ function MainContent() {
       } else if (cmd === "flashcard_show_question") {
         if (flashcard.totalCards > 0) {
           flashcard.showQuestionAction();
+        }
+      } else if (cmd === "material_next") {
+        if ((window as any).materialsModule?.nextPage) {
+          (window as any).materialsModule.nextPage();
+        }
+      } else if (cmd === "material_previous") {
+        if ((window as any).materialsModule?.previousPage) {
+          (window as any).materialsModule.previousPage();
         }
       }
 

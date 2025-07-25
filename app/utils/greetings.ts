@@ -4,11 +4,13 @@ const MATERIAL_GREETINGS_PRE = `Anda berada di halaman Materi, berikut daftar ma
 const MATERIAL_DETAIL_PRE = `Anda berada di materi `;
 const MATERIAL_DETAIL_SUFF = ` Apakah Anda ingin memainkan flashcards, membuat ulang flashcards, mulai sesi tanya jawab, atau mendengarkan rangkuman materi ini?`;
 
-function getGreeting(pageCode: string) {
+export function getGreeting(pageCode: string): string {
   if (pageCode === "lanpage") {
     return LANDING_PAGE_GREETINGS;
   } else if (pageCode === "menu") {
     return MENU_PAGE_GREETINGS;
   } else if (pageCode === "material") {
+    return "";
   }
+  return "";
 }

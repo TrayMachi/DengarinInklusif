@@ -47,6 +47,8 @@ Command | Description
 "navigate [page_code]" | Pindah ke halaman dengan kode page_code
 "read" | Bacakan isi halaman
 "navigate material_detail [material_code]" | Membuka detail dari material dengan kode code
+"material_next" | materi selanjutnya
+"material_previous" | materi sebelumnya
 "back" | Kembali ke halaman sebelumnya
 
 Available [page_code] values:

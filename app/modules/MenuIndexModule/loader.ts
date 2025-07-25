@@ -7,5 +7,6 @@ export async function MenuIndexLoader({ request }: LoaderFunctionArgs) {
   return {
     user,
     timestamp: new Date().toISOString(),
+    pageCode: "menu",
   };
 }
