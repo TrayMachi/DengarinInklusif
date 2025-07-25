@@ -12,3 +12,12 @@ export const ttsClient = new TextToSpeechClient({
 export const llm = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENAI_API_KEY || "",
 });
+
+export const generateText = async (prompt: string): Promise<string> => {
+  const response = await llm.models.generateContent({
+    model: 'gemini-2.0-flash',
+    contents: prompt,
+  });
+
+  return response.text || '';
+}

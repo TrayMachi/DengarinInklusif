@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
 import type { ActionFunctionArgs } from "react-router";
-import { llm, speechClient, ttsClient } from "~/utils/ai";
+import { llm, speechClient, ttsClient } from "~/utils/ai.server";
 
 export interface AudioCommandResponse {
   success: boolean;
