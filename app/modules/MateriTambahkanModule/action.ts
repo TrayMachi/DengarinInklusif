@@ -87,6 +87,7 @@ export async function MateriTambahkanAction({ request }: ActionFunctionArgs) {
     }
 
     **REQUIREMENTS:**
+    - Use Indonesian language (translate the content, description, and title to Indonesian)
     - Title: Should be clear and educational (max 100 chars)
     - Description: Should summarize the key learning objectives (max 300 chars)
     - Content: Use proper Markdown formatting with headers (##, ###), lists, emphasis, code blocks when needed. Make it comprehensive and educational.

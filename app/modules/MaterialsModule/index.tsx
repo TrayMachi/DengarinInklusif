@@ -138,7 +138,15 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                         </Button>
                       </div>
                       <div className="mt-2 w-full">
-                        <Button size="sm" className="!w-full">
+                        <Button
+                          onClick={() =>
+                            navigate(
+                              `/menu/materi/rangkuman/${material.code}`
+                            )
+                          }
+                          size="sm"
+                          className="!w-full"
+                        >
                           <FileText className="h-3 w-3 mr-2" />
                           Rangkuman
                         </Button>
