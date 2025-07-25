@@ -8,10 +8,8 @@ import {
 import {
   Outlet,
   redirect,
-  useLoaderData,
   useMatches,
   useNavigate,
-  useRouteLoaderData,
   type LoaderFunctionArgs,
 } from "react-router";
 import { Toaster } from "~/components/ui/sonner";

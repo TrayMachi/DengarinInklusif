@@ -41,7 +41,7 @@ export function getRoute(arg1: string, arg2?: string) {
     return "";
   }
 
-  if (arg1 !== "menu_detail") return pageRoutes[arg1]();
+  if (arg1 !== "material_detail") return pageRoutes[arg1]();
 
   if (!arg2) return "";
 
