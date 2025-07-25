@@ -36,3 +36,9 @@ Scalable to thousands of inclusive schools across the country
 Partner with the Ministry of Education and CSR programs to bring DengarInklusif to 260+ schools in 2025
 Expand to support local languages and integrate with Braille-compatible devices
 Build mobile apps for broader access across rural and urban areas
+
+## How to run in local:
+1. Make an env file based on the example given in .env.example
+2. Run **pnpm install**
+3. Run **pnpm prisma generate**
+4. Run **pnpm dev**
