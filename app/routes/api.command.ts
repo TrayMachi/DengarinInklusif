@@ -197,7 +197,11 @@ export async function action({ request }: ActionFunctionArgs) {
     console.log(getGreeting(pageCode));
 
     if (processedCommand.command === "read") {
-      text = getGreeting(pageCode) || "";
+      if (pageCode !== "material") {
+        text = getGreeting(pageCode) || "";
+      } else {
+        text = getGreeting(pageCode, materials);
+      }
     } else {
       text = processedCommand.description;
     }
