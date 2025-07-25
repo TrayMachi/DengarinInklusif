@@ -61,7 +61,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [speechEnabled, setSpeechEnabled] = useState(true);
+  const [speechEnabled, setSpeechEnabled] = useState(false);
   const lastSpokenPageRef = useRef<number | null>(null);
 
   const ITEMS_PER_PAGE = 5;
@@ -135,7 +135,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
         console.error("Failed to fetch TTS:", error);
       }
     },
-    [speechEnabled, currentPage, totalPages]
+    [speechEnabled, currentPage, totalPages],
   );
 
   const handleNextPage = useCallback(() => {
@@ -228,8 +228,9 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
             <div className="mb-6 p-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground text-center">
                 💡 Tahan <strong>spasi</strong> dan ucapkan "
-                <strong>materi selanjutnya</strong>" untuk halaman berikutnya atau "
-                <strong>materi sebelumnya</strong>" untuk halaman sebelumnya
+                <strong>materi selanjutnya</strong>" untuk halaman berikutnya
+                atau "<strong>materi sebelumnya</strong>" untuk halaman
+                sebelumnya
               </p>
             </div>
 
@@ -324,7 +325,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                           >
                             {page}
                           </Button>
-                        )
+                        ),
                       )}
                     </div>
 

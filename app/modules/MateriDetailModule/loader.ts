@@ -28,5 +28,5 @@ export async function MateriDetailLoader(args: LoaderFunctionArgs) {
     },
   });
 
-  return { material };
+  return { material, pageCode: "material_detail" };
 }
