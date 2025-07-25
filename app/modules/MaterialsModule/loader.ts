@@ -17,11 +17,11 @@ export async function MaterialsLoader({ request }: LoaderFunctionArgs) {
       materialContent: true,
       flashcard: true,
       _count: {
-        select: { userQuestion: true }
-      }
+        select: { userQuestion: true },
+      },
     },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: "desc" },
   });
 
-  return { materials };
+  return { materials, pageCode: "material" };
 }

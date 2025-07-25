@@ -9,7 +9,9 @@ import {
   Outlet,
   redirect,
   useLoaderData,
+  useMatches,
   useNavigate,
+  useRouteLoaderData,
   type LoaderFunctionArgs,
 } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
@@ -50,11 +52,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/");
   }
 
-  return { pageCode: "lanpage" };
+  return null;
 }
 
 function MainContent() {
-  const { pageCode } = useLoaderData<{ pageCode: string }>();
+  const matches = useMatches();
+  const { pageCode } = matches.at(-1)?.data as { pageCode: string };
 
   const mediaRecorderRef = useRef<MediaRecorder>(null);
   const mediaStream = useRef<MediaStream>(null);
