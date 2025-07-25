@@ -7,6 +7,8 @@ const COMMAND_LIST = [
   "flashcard_read_answer",
   "flashcard_show_answer",
   "flashcard_show_question",
+  "material_next",
+  "material_previous",
 ];
 
 const PAGE_CODES = [
@@ -37,6 +39,10 @@ export function validateCommand(commandStr: string): boolean {
   }
 
   if (command[0].startsWith("flashcard_")) {
+    return true;
+  }
+
+  if (command[0].startsWith("material_")) {
     return true;
   }
 
