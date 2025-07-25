@@ -9,7 +9,9 @@ import {
   Outlet,
   redirect,
   useLoaderData,
+  useMatches,
   useNavigate,
+  useRouteLoaderData,
   type LoaderFunctionArgs,
 } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
@@ -50,11 +52,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/");
   }
 
-  return { pageCode: "lanpage" };
+  return null;
 }
 
 function MainContent() {
-  const { pageCode } = useLoaderData<{ pageCode: string }>();
+  const matches = useMatches();
+  const data = matches.at(-1)?.data;
+  const { pageCode } = data as { pageCode: string };
+
+  let materials = {};
+
+  if ("materials" in (data as any)) {
+    materials = (data as any).materials;
+  }
 
   const mediaRecorderRef = useRef<MediaRecorder>(null);
   const mediaStream = useRef<MediaStream>(null);
@@ -112,6 +122,7 @@ function MainContent() {
     const formData = new FormData();
     formData.append("audio", blob, "command.webm");
     formData.append("pageCode", pageCode);
+    formData.append("materials", JSON.stringify(materials));
 
     try {
       const response = await fetch("/api/command", {
