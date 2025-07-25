@@ -17,7 +17,7 @@ import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
 import { isAuthenticatedServer } from "~/utils/auth.server";
 import { useEffect, useRef, useState } from "react";
-import { getRoute, validateCommand } from "~/utils/navigation";
+import { getRoute, validateCommand } from "~/utils/navigation.client";
 
 const HOLD_THRESHOLD = 300; // in ms
 const HOLD_OUT_DELAY = 300;
