@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { FileText, GraduationCap, Mic, Scan } from "lucide-react";
+import { Link } from "react-router";
 
 export const HeroSection = () => {
   return (
@@ -55,12 +56,14 @@ export const HeroSection = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 py-2 max-md:w-full">
-            <Button size="lg" className="h-12 max-md:w-full px-8">
-              Start Learning
-              <span className="sr-only">
-                Begin your accessible learning journey
-              </span>
-            </Button>
+            <Link to="/menu" className="w-full">
+              <Button size="lg" className="h-12 max-md:w-full px-8">
+                Start Learning
+                <span className="sr-only">
+                  Begin your accessible learning journey
+                </span>
+              </Button>
+            </Link>
             <Button variant="outline" size="lg" className="h-12 max-md:w-full px-8">
               Watch Demo
               <span className="sr-only">View platform demonstration</span>
