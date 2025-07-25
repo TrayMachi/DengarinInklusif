@@ -1,6 +1,7 @@
-import { readFileSync, writeFileSync } from "fs";
 import type { ActionFunctionArgs } from "react-router";
 import { llm, speechClient, ttsClient } from "~/utils/ai.server";
+import { getGreeting } from "~/utils/greetings";
+import { getCommands, type MaterialFetch } from "~/utils/prompts";
 
 export interface AudioCommandResponse {
   success: boolean;
@@ -13,28 +14,6 @@ export interface AudioCommandResponse {
 }
 
 const MODEL = "gemini-2.0-flash-001";
-
-const COMMAND_MANUAL = `
-Available Commands:
-Command | Description
--------------
-"navigate [page_code]" | Pindah ke halaman dengan kode page_code
-"flashcard_next" | Pindah ke flashcard selanjutnya
-"flashcard_previous" | Kembali ke flashcard sebelumnya
-"flashcard_read_question" | Membaca flashcard saat ini
-"flashcard_read_answer" | Membaca jawaban saat ini
-"flashcard_show_answer" | Menampilkan jawaban
-"flashcard_show_question" | Menampilkan flashcard
-
-Available page_code values:
-Code | Keyword / Description
------------------------
-lanpage | Landing page
-menu | Menu, dashboard, main page, beranda, or halaman utama
-material |  Material, materi, halaman utama materi, or pelajaran
-material_detail <code> | Material with code <code> or materi kode <code>
-settings | Settings, pengaturan, preferences, preferensi, or atur akun
-`;
 
 interface ProcessedCommand {
   command: string;
@@ -79,13 +58,14 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 // Function to process natural language command using Gemini
 async function processCommandWithGemini(
   transcription: string,
-  pageCode: string
+  pageCode: string,
+  materials: MaterialFetch[],
 ): Promise<ProcessedCommand> {
   try {
     const prompt = `
 You are a command interpreter. Convert the following natural language request into a structured command.
 
-${COMMAND_MANUAL}
+${getCommands(pageCode, { materials })}
 
 User Request: "${transcription}"
 
@@ -143,7 +123,7 @@ Respond only with valid JSON.
 // Function to generate TTS audio
 async function generateTTSAudio(
   text: string,
-  languageCode: string = "en-US"
+  languageCode: string = "en-US",
 ): Promise<Buffer> {
   try {
     const request = {
@@ -183,11 +163,12 @@ export async function action({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
     const audioFile = formData.get("audio") as File;
     const pageCode = formData.get("pageCode") as string;
+    const materials = JSON.parse(formData.get("materials") as string);
 
     if (!audioFile) {
       return Response.json(
         { error: "Audio file is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -199,15 +180,29 @@ export async function action({ request }: ActionFunctionArgs) {
       "Processing audio file:",
       audioFile.name,
       "Size:",
-      audioBuffer.length
+      audioBuffer.length,
     );
 
     const transcription = await transcribeAudio(audioBuffer);
     const processedCommand = await processCommandWithGemini(
       transcription,
-      pageCode
+      pageCode,
+      materials,
     );
-    const ttsAudioBuffer = await generateTTSAudio(processedCommand.description);
+
+    let text: string;
+
+    console.log(processedCommand);
+    console.log(pageCode);
+    console.log(getGreeting(pageCode));
+
+    if (processedCommand.command === "read") {
+      text = getGreeting(pageCode) || "";
+    } else {
+      text = processedCommand.description;
+    }
+
+    const ttsAudioBuffer = await generateTTSAudio(text);
 
     // Step 4: Return response with command and audio
     const response = {
@@ -231,7 +226,7 @@ export async function action({ request }: ActionFunctionArgs) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
