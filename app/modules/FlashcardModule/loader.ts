@@ -3,17 +3,18 @@ import { prisma } from "~/utils/prisma";
 import { getAuthenticatedUser } from "~/utils/auth.server";
 
 export interface Flashcard {
-  flashcardPage: FlashcardPage[];
+  flashcardPage: FlashcardPage[]
 }
 
 export interface FlashcardPage {
-  id: string;
-  flashcardId: string;
-  question: string;
-  answer: string;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  flashcardId: string
+  question: string
+  answer: string
+  createdAt: string
+  updatedAt: string
 }
+
 
 export async function FlashcardLoader(args: LoaderFunctionArgs) {
   const user = await getAuthenticatedUser(args.request);
@@ -37,8 +38,5 @@ export async function FlashcardLoader(args: LoaderFunctionArgs) {
     },
   });
 
-  return {
-    ...(material?.flashcard?.flashcardPage || {}),
-    pageCode: "flashcard",
-  };
+  return material?.flashcard?.flashcardPage;
 }
