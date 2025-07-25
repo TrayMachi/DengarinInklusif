@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import type { ActionFunctionArgs } from "react-router";
 import { llm, speechClient, ttsClient } from "~/utils/ai.server";
 
@@ -57,7 +57,7 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
         ?.map((result) => result.alternatives?.[0]?.transcript)
         .join("\n") || "";
 
-    console.log(transcription);
+    console.log(response);
 
     if (!transcription) {
       throw new Error("No transcription received");
