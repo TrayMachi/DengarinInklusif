@@ -13,15 +13,15 @@ export const HeroSection = () => {
             variant="secondary"
             className="px-4 md:px-6 py-3 text-[14px] md:text-xl font-bold"
           >
-            Audio-First Learning Platform
+            Platform Pembelajaran Berbasis Audio
           </Badge>
-          <div className="space-y-8 py-2">
-            <h1 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              Personalized Learning for
+          <div className="space-y-8 py-2 items-center text-center justify-center">
+            <h1 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-6xl/none bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              Pembelajaran yang Dipersonalisasi
               <br />
-              Visually Impaired Students
+              untuk Siswa Tunanetra
             </h1>
-            <div className="flex max-md:flex-col items-center gap-3 max-md:w-full md:gap-8 text-sm text-muted-foreground">
+            <div className="flex max-md:flex-col items-center justify-center gap-3 max-md:w-full md:gap-8 text-sm text-muted-foreground">
               <div className="flex max-md:w-full max-md:justify-center items-center gap-2 border-[1px] rounded-[12px] py-3 px-4">
                 <span
                   className="text-2xl"
@@ -30,13 +30,13 @@ export const HeroSection = () => {
                 >
                   <FileText />
                 </span>
-                <span>Screen Reader Optimized</span>
+                <span>Pembaca Layar</span>
               </div>
               <div className="flex max-md:w-full max-md:justify-center items-center gap-2 border-[1px] rounded-[12px] py-3 px-4">
                 <span className="text-2xl" role="img" aria-label="Voice icon">
                   <Mic />
                 </span>
-                <span>Voice Navigation</span>
+                <span>Navigasi Suara</span>
               </div>
               <div className="flex max-md:w-full max-md:justify-center items-center gap-2 border-[1px] rounded-[12px] py-3 px-4">
                 <span
@@ -46,27 +46,28 @@ export const HeroSection = () => {
                 >
                   <GraduationCap />
                 </span>
-                <span>Curriculum Aligned</span>
+                <span>Sesuai Kurikulum</span>
               </div>
             </div>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl max-md:text-justify">
-              Empowering blind and visually impaired students in Indonesia with
-              audio-based lessons, voice exercises, and document-to-speech
-              conversion designed for grades SD through SMA.
+              Memberdayakan siswa tunanetra dan low vision di Indonesia melalui
+              pelajaran berbasis audio, latihan suara, serta konversi dokumen ke
+              suara untuk jenjang SD hingga SMA.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 py-2 max-md:w-full">
             <Link to="/menu" className="w-full">
               <Button size="lg" className="h-12 max-md:w-full px-8">
-                Start Learning
-                <span className="sr-only">
-                  Begin your accessible learning journey
-                </span>
+                Mulai Belajar
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="h-12 max-md:w-full px-8">
-              Watch Demo
-              <span className="sr-only">View platform demonstration</span>
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 max-md:w-full px-8"
+            >
+              Tonton Demo
+              <span className="sr-only">Lihat demonstrasi platform</span>
             </Button>
           </div>
         </div>
