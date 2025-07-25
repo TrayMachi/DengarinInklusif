@@ -20,7 +20,6 @@ import { Footer } from "~/components/Footer";
 import { isAuthenticatedServer } from "~/utils/auth.server";
 import { useEffect, useRef, useState } from "react";
 import { getRoute } from "~/utils/navigation.client";
-import { match } from "assert";
 
 const HOLD_THRESHOLD = 300; // in ms
 const HOLD_OUT_DELAY = 300;

@@ -174,6 +174,8 @@ export function getCommands(pageCode: string, props?: GetCommandProps): string {
       return FLASHCARD_COMMANDS;
     case "qna":
       return QNA_COMMANDS;
+    default:
+      return FLASHCARD_COMMANDS;
   }
 
   return "";

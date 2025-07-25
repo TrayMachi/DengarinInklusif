@@ -54,7 +54,6 @@ export const MateriRangkumanModule = () => {
 
     return text;
   };
-
   const handlePlayTTS = async () => {
     if (isPlaying) {
       // Stop current audio
@@ -86,6 +85,10 @@ export const MateriRangkumanModule = () => {
       setIsLoading(false);
     }
   };
+  
+  useEffect(() => {
+    handlePlayTTS();
+  }, []);
 
   // Handle TTS response
   useEffect(() => {
