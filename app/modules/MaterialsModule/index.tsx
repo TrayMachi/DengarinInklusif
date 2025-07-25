@@ -100,7 +100,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                     key={material.id}
                     className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                     onClick={() =>
-                      navigate(`/menu/materi/detail/${material.code}`)
+                      navigate(`/menu/materi/${material.code}`)
                     }
                   >
                     <CardHeader className="pb-3">

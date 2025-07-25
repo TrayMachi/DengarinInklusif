@@ -76,10 +76,6 @@ export const MateriDetailModule = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="prose dark:prose-invert max-w-none mb-6">
-                {/* Render markdown content if you want, or just plain text */}
-                {material.materialContent?.content}
-              </div>
               <div className="flex flex-col md:flex-row gap-2 mt-4">
                 <Button
                   size="sm"
@@ -102,19 +98,24 @@ export const MateriDetailModule = () => {
                   variant="secondary"
                   className="flex-1"
                   onClick={() =>
-                    navigate(`/menu/materi/flashcard/${material.code}`)
+                    navigate(`/menu/materi/${material.code}/flashcard`)
                   }
                 >
                   <Play className="h-3 w-3 mr-2" />
                   Flashcard
                 </Button>
-                <Button size="sm" variant="secondary" className="flex-1">
+                <Button
+                  onClick={() => navigate(`/menu/materi/${material.code}/qna`)}
+                  size="sm"
+                  variant="secondary"
+                  className="flex-1"
+                >
                   <FileText className="h-3 w-3 mr-2" />
                   Tanya Jawab
                 </Button>
                 <Button
                   onClick={() =>
-                    navigate(`/menu/materi/rangkuman/${material.code}`)
+                    navigate(`/menu/materi/${material.code}/rangkuman`)
                   }
                   size="sm"
                   className="flex-1"
