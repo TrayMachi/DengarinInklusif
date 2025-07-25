@@ -54,16 +54,12 @@ export const MateriQNAModule = () => {
   }, [userQuestions]);
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
+    if (
+      fetcher.state === "idle" &&
+      fetcher.data
+    ) {
       if (fetcher.data.success) {
         setMessages((prev) => prev.filter((msg) => !msg.isLoading));
-        const newMessage: ChatMessage = {
-          id: Date.now().toString(),
-          question: fetcher.data.data.question,
-          answer: fetcher.data.data.answer,
-          createdAt: new Date(fetcher.data.data.createdAt),
-        };
-        setMessages((prev) => [...prev, newMessage]);
         setQuestion("");
       } else {
         setMessages((prev) => prev.filter((msg) => !msg.isLoading));

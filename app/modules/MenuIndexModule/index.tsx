@@ -139,42 +139,27 @@ export const MenuIndexModule = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-card/80 backdrop-blur-sm rounded-xl border border-border/50 shadow-md p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6">
-            Aksi Cepat
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              {
-                icon: "📝",
-                label: "Materi",
-                route: "/menu/materi",
-                color: "bg-blue-500",
-              },
-              {
-                icon: "⚙️",
-                label: "Pengaturan",
-                route: "/menu/pengaturan",
-                color: "bg-orange-500",
-              },
-            ].map((action, index) => (
-              <button
-                key={index}
-                className="group flex flex-col items-center gap-3 p-6 bg-muted/50 hover:bg-primary/10 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-                onClick={() => navigate(action.route)}
-              >
-                <div
-                  className={`p-3 ${action.color} text-white rounded-xl group-hover:scale-110 transition-transform duration-300`}
-                >
-                  <span className="text-2xl">{action.icon}</span>
-                </div>
-                <span className="text-sm font-medium text-foreground text-center">
-                  {action.label}
-                </span>
-              </button>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 gap-8">
+          {[
+            {
+              label: "Materi",
+              route: "/menu/materi",
+            },
+            {
+              label: "Pengaturan",
+              route: "/menu/pengaturan",
+            },
+          ].map((action, index) => (
+            <button
+              key={index}
+              className="flex flex-col items-center gap-3 p-6 bg-muted/50 hover:bg-primary/10 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              onClick={() => navigate(action.route)}
+            >
+              <span className="text-5xl font-sans text-primary text-left mt-5 w-full font-bold">
+                {action.label}
+              </span>
+            </button>
+          ))}
         </div>
 
         {/* Motivational Quote */}
