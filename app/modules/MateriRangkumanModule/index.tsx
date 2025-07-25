@@ -143,7 +143,7 @@ export const MateriRangkumanModule = () => {
 
           {/* Header content */}
           <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex max-md:flex-col items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-8 bg-gradient-to-b from-primary to-chart-3 rounded-full"></div>
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-chart-1 to-chart-2 bg-clip-text text-transparent">

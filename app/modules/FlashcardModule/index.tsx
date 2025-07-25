@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useLoaderData } from "react-router";
 import type { FlashcardPage } from "./loader";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { useFlashcard } from "~/components/context/flashcard-context";
 
 interface Flashcard {
   question: string;
@@ -14,13 +15,21 @@ interface FlashcardModuleProps {
 }
 
 export const FlashcardModule = () => {
-  const [current, setCurrent] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
   const cards = useLoaderData<FlashcardPage[]>();
+  const flashcard = useFlashcard();
+
+  // Initialize cards in context when component mounts
+  useEffect(() => {
+    console.log("FlashcardModule useEffect - cards:", cards?.length || 0);
+    if (cards && cards.length > 0) {
+      console.log("Initializing flashcard context with cards:", cards);
+      flashcard.setCards(cards);
+    }
+  }, [cards, flashcard.setCards]);
 
   if (!cards || cards.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="w-full max-w-xl mx-auto p-8 text-center">
           <CardHeader>
             <CardTitle>Tidak ada flashcard</CardTitle>
@@ -35,27 +44,29 @@ export const FlashcardModule = () => {
     );
   }
 
-  const card = cards[current];
+  const card = cards[flashcard.current];
 
   return (
-    <div className="flex items-center justify-center h-[70vh]">
+    <div className="flex items-center justify-center h-fit min-h-[70vh]">
       <Card className="w-full max-w-2xl mx-auto p-8 flex flex-col items-center justify-center shadow-xl !gap-0">
         <CardHeader className="w-full text-center">
           <CardTitle className="text-[16px] font-bold text-muted-foreground">
-            {showAnswer
+            {flashcard.showAnswer
               ? "Jawaban"
-              : `Pertanyaan ${current + 1} dari ${cards.length}`}
+              : `Pertanyaan ${flashcard.current + 1} dari ${
+                  flashcard.totalCards
+                }`}
           </CardTitle>
         </CardHeader>
         <CardContent className="w-full flex flex-col items-center justify-center">
           <div className="min-h-[100px] flex items-center justify-center text-xl md:text-2xl font-semibold mb-8">
-            {showAnswer ? card.answer : card.question}
+            {flashcard.showAnswer ? card.answer : card.question}
           </div>
-          {!showAnswer ? (
+          {!flashcard.showAnswer ? (
             <Button
               size="lg"
               className="mb-6"
-              onClick={() => setShowAnswer(true)}
+              onClick={flashcard.showAnswerAction}
             >
               Lihat Jawaban
             </Button>
@@ -64,7 +75,7 @@ export const FlashcardModule = () => {
               size="lg"
               variant="secondary"
               className="mb-6"
-              onClick={() => setShowAnswer(false)}
+              onClick={flashcard.showQuestionAction}
             >
               Lihat Pertanyaan
             </Button>
@@ -72,21 +83,15 @@ export const FlashcardModule = () => {
           <div className="flex gap-4 mt-4">
             <Button
               variant="outline"
-              disabled={current === 0}
-              onClick={() => {
-                setCurrent((prev) => Math.max(prev - 1, 0));
-                setShowAnswer(false);
-              }}
+              disabled={flashcard.current === 0}
+              onClick={flashcard.previousCard}
             >
               Sebelumnya
             </Button>
             <Button
               variant="outline"
-              disabled={current === cards.length - 1}
-              onClick={() => {
-                setCurrent((prev) => Math.min(prev + 1, cards.length - 1));
-                setShowAnswer(false);
-              }}
+              disabled={flashcard.current === flashcard.totalCards - 1}
+              onClick={flashcard.nextCard}
             >
               Selanjutnya
             </Button>

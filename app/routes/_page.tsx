@@ -2,6 +2,10 @@ import { Home } from "lucide-react";
 import { ThemeProvider } from "~/components/context/theme-provider";
 import { AuthProvider } from "~/components/context/auth-context";
 import {
+  FlashcardProvider,
+  useFlashcard,
+} from "~/components/context/flashcard-context";
+import {
   Outlet,
   redirect,
   useLoaderData,
@@ -49,7 +53,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return { pageCode: "lanpage" };
 }
 
-export default function Index() {
+function MainContent() {
   const { pageCode } = useLoaderData<{ pageCode: string }>();
 
   const mediaRecorderRef = useRef<MediaRecorder>(null);
@@ -62,13 +66,10 @@ export default function Index() {
   const isHolding = useRef<boolean>(false);
 
   const navigate = useNavigate();
-
+  const flashcard = useFlashcard();
   const [recording, setRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isStarting, setIsStarting] = useState<boolean>(false);
-  const [micPermissionStatus, setMicPermissionStatus] = useState<
-    "prompt" | "granted" | "denied" | "unsupported"
-  >("prompt");
 
   const playBeep = () => {
     const ctx = new AudioContext();
@@ -140,8 +141,37 @@ export default function Index() {
       const arg2 = commandArr.length > 2 ? commandArr[2] : "";
       const arg3 = commandArr.length > 3 ? commandArr[3] : "";
 
+      console.log(cmd);
+
       if (cmd === "navigate") {
         navigate(getRoute(arg1, arg2));
+      } else if (cmd === "flashcard_next") {
+        console.log("flashcard_next - totalCards:", flashcard.totalCards);
+        if (flashcard.totalCards > 0) {
+          flashcard.nextCard();
+        } else {
+          console.log("No cards available for flashcard_next");
+        }
+      } else if (cmd === "flashcard_previous") {
+        if (flashcard.totalCards > 0) {
+          flashcard.previousCard();
+        }
+      } else if (cmd === "flashcard_read_question") {
+        if (flashcard.totalCards > 0) {
+          flashcard.readQuestion();
+        }
+      } else if (cmd === "flashcard_read_answer") {
+        if (flashcard.totalCards > 0) {
+          flashcard.readAnswer();
+        }
+      } else if (cmd === "flashcard_show_answer") {
+        if (flashcard.totalCards > 0) {
+          flashcard.showAnswerAction();
+        }
+      } else if (cmd === "flashcard_show_question") {
+        if (flashcard.totalCards > 0) {
+          flashcard.showQuestionAction();
+        }
       }
 
       // 🔊 Play the returned TTS audio
@@ -287,16 +317,24 @@ export default function Index() {
   }, [recording, isStarting]);
 
   return (
+    <main className="text-black dark:text-white">
+      <Navbar />
+      <main className="max-w-[1920px] mx-auto min-h-screen overflow-x-hidden flex flex-col items-center">
+        <Outlet />
+        <Toaster />
+      </main>
+      <Footer />
+    </main>
+  );
+}
+
+export default function Index() {
+  return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <AuthProvider>
-        <main className="text-black dark:text-white">
-          <Navbar />
-          <main className="max-w-[1920px] mx-auto min-h-screen overflow-x-hidden flex flex-col items-center">
-            <Outlet />
-            <Toaster />
-          </main>
-          <Footer />
-        </main>
+        <FlashcardProvider>
+          <MainContent />
+        </FlashcardProvider>
       </AuthProvider>
     </ThemeProvider>
   );

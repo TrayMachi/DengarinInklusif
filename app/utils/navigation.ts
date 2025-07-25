@@ -1,4 +1,14 @@
-const COMMAND_LIST = ["navigate", "upload"];
+const COMMAND_LIST = [
+  "navigate",
+  "upload",
+  "flashcard_next",
+  "flashcard_previous",
+  "flashcard_read_question",
+  "flashcard_read_answer",
+  "flashcard_show_answer",
+  "flashcard_show_question",
+];
+
 const PAGE_CODES = [
   "lanpage",
   "menu",
@@ -18,12 +28,16 @@ export const pageRoutes: { [key: string]: (arg0?: any) => string } = {
 export function validateCommand(commandStr: string): boolean {
   const command = commandStr.split(" ");
 
-  if (command.length < 2 || !COMMAND_LIST.includes(command[0])) {
+  if (command.length < 1 || !COMMAND_LIST.includes(command[0])) {
     return false;
   }
 
   if (command[0] === "navigate") {
-    return PAGE_CODES.includes(command[1]);
+    return command.length >= 2 && PAGE_CODES.includes(command[1]);
+  }
+
+  if (command[0].startsWith("flashcard_")) {
+    return true;
   }
 
   return false;
