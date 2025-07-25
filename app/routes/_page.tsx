@@ -5,6 +5,7 @@ import {
   Outlet,
   redirect,
   useLoaderData,
+  useNavigate,
   type LoaderFunctionArgs,
 } from "react-router";
 import { Toaster } from "~/components/ui/sonner";
@@ -12,6 +13,15 @@ import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
 import { isAuthenticatedServer } from "~/utils/auth.server";
 import { useEffect, useRef, useState } from "react";
+import { validateCommand } from "~/utils/navigation";
+
+const pageRoutes: { [key: string]: (arg0?: any) => string } = {
+  lanpage: () => "/",
+  menu: () => "/menu",
+  material: () => "/menu/materi",
+  material_detail: (code: string) => `/menu/materi/${code}`,
+  settings: () => "/menu/pengaturan",
+};
 
 export function ErrorBoundary() {
   return (
@@ -48,6 +58,7 @@ export default function Index() {
   const mediaRecorderRef = useRef<MediaRecorder>(null);
   const mediaStream = useRef<MediaStream>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const navigate = useNavigate();
   const [recording, setRecording] = useState(false);
   const [isStarting, setIsStarting] = useState<boolean>(false);
 
@@ -84,6 +95,26 @@ export default function Index() {
       console.log("✅ Command:", data.command);
       console.log("✅ Description:", data.description);
 
+      const commandStr = data.command as string;
+
+      if (!validateCommand(commandStr)) {
+        console.error("Command error: Invalid command");
+        return;
+      }
+
+      const commandArr = commandStr.split(" ");
+
+      const cmd = commandArr[0];
+      const arg = commandArr[1];
+
+      if (cmd === "navigate") {
+        if (commandArr.length > 2) {
+          const arg2 = commandArr[2];
+          navigate(pageRoutes[arg](arg2));
+        }
+        navigate(pageRoutes[arg]());
+      }
+
       // 🔊 Play the returned TTS audio
       if (data.ttsAudio) {
         const audio = new Audio(`data:audio/mp3;base64,${data.ttsAudio}`);
@@ -95,6 +126,16 @@ export default function Index() {
   };
 
   useEffect(() => {
+    const audio = new Audio("/micnotfound.mp3");
+
+    const handlePlayAudio = async () => {
+      try {
+        await audio.play();
+      } catch (error) {
+        console.log("Audio autoplay was prevented:", error);
+      }
+    };
+
     const handleKeyDown = async (e: any) => {
       if (e.code === "Space" && !recording && !isStarting) {
         setIsStarting(true);
@@ -128,6 +169,7 @@ export default function Index() {
           mediaRecorderRef.current.start();
         } catch (err) {
           alert("Microphone access denied");
+          handlePlayAudio();
           setIsStarting(false);
         }
       }
