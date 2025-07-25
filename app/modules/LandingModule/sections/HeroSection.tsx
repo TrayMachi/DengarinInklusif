@@ -61,14 +61,16 @@ export const HeroSection = () => {
                 Mulai Belajar
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-12 max-md:w-full px-8"
-            >
-              Tonton Demo
-              <span className="sr-only">Lihat demonstrasi platform</span>
-            </Button>
+            <a href="https://youtu.be/5aXs92crCY8">
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-12 max-md:w-full px-8"
+              >
+                Tonton Demo
+                <span className="sr-only">Lihat demonstrasi platform</span>
+              </Button>
+            </a>
           </div>
         </div>
       </div>
