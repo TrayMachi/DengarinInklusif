@@ -16,6 +16,5 @@ export async function action(args: ActionFunctionArgs) {
 }
 
 export default function FlashcardPage() {
-  const { material } = useLoaderData<typeof loader>();
-  return <FlashcardModule material={material} />;
+  return <FlashcardModule />;
 }
