@@ -18,7 +18,13 @@ const COMMAND_MANUAL = `
 Available Commands:
 Command | Description
 -------------
-"navigate [page_code]" | Navigate to page with code page_code
+"navigate [page_code]" | Pindah ke halaman dengan kode page_code
+"flashcard_next" | Pindah ke flashcard selanjutnya
+"flashcard_previous" | Kembali ke flashcard sebelumnya
+"flashcard_read_question" | Membaca flashcard saat ini
+"flashcard_read_answer" | Membaca jawaban saat ini
+"flashcard_show_answer" | Menampilkan jawaban
+"flashcard_show_question" | Menampilkan flashcard
 
 Available page_code values:
 Code | Keyword / Description
@@ -73,7 +79,7 @@ async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
 // Function to process natural language command using Gemini
 async function processCommandWithGemini(
   transcription: string,
-  pageCode: string,
+  pageCode: string
 ): Promise<ProcessedCommand> {
   try {
     const prompt = `
@@ -91,8 +97,8 @@ Please respond with a JSON object containing:
 
 If the request doesn't match any available command, return:
 {
-  "command": "unknown_command",
-  "description": "Command not recognized. Please try again with a supported command."
+  "command": "unknown_command", 
+  "description": "Perintah tidak dikenali. Silakan coba lagi dengan perintah yang didukung."
 }
 
 Respond only with valid JSON.
@@ -135,13 +141,16 @@ Respond only with valid JSON.
 }
 
 // Function to generate TTS audio
-async function generateTTSAudio(text: string): Promise<Buffer> {
+async function generateTTSAudio(
+  text: string,
+  languageCode: string = "en-US"
+): Promise<Buffer> {
   try {
     const request = {
       input: { text },
       voice: {
-        languageCode: "en-US",
-        name: "en-US-Journey-F", // Use a pleasant voice
+        languageCode,
+        name: "id-ID-Standard-A",
         ssmlGender: "FEMALE" as const,
       },
       audioConfig: {
@@ -178,7 +187,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!audioFile) {
       return Response.json(
         { error: "Audio file is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -190,13 +199,13 @@ export async function action({ request }: ActionFunctionArgs) {
       "Processing audio file:",
       audioFile.name,
       "Size:",
-      audioBuffer.length,
+      audioBuffer.length
     );
 
     const transcription = await transcribeAudio(audioBuffer);
     const processedCommand = await processCommandWithGemini(
       transcription,
-      pageCode,
+      pageCode
     );
     const ttsAudioBuffer = await generateTTSAudio(processedCommand.description);
 
@@ -222,7 +231,7 @@ export async function action({ request }: ActionFunctionArgs) {
       },
       {
         status: 500,
-      },
+      }
     );
   }
 }

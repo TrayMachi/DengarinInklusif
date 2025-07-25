@@ -2,6 +2,10 @@ import { Home } from "lucide-react";
 import { ThemeProvider } from "~/components/context/theme-provider";
 import { AuthProvider } from "~/components/context/auth-context";
 import {
+  FlashcardProvider,
+  useFlashcard,
+} from "~/components/context/flashcard-context";
+import {
   Outlet,
   redirect,
   useLoaderData,
@@ -53,12 +57,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return { pageCode: "lanpage" };
 }
 
-export default function Index() {
+function MainContent() {
   const { pageCode } = useLoaderData<{ pageCode: string }>();
   const mediaRecorderRef = useRef<MediaRecorder>(null);
   const mediaStream = useRef<MediaStream>(null);
   const chunksRef = useRef<Blob[]>([]);
   const navigate = useNavigate();
+  const flashcard = useFlashcard();
   const [recording, setRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isStarting, setIsStarting] = useState<boolean>(false);
@@ -119,12 +124,41 @@ export default function Index() {
       const cmd = commandArr[0];
       const arg = commandArr[1];
 
+      console.log(cmd);
+
       if (cmd === "navigate") {
         if (commandArr.length > 2) {
           const arg2 = commandArr[2];
           navigate(pageRoutes[arg](arg2));
         }
         navigate(pageRoutes[arg]());
+      } else if (cmd === "flashcard_next") {
+        console.log("flashcard_next - totalCards:", flashcard.totalCards);
+        if (flashcard.totalCards > 0) {
+          flashcard.nextCard();
+        } else {
+          console.log("No cards available for flashcard_next");
+        }
+      } else if (cmd === "flashcard_previous") {
+        if (flashcard.totalCards > 0) {
+          flashcard.previousCard();
+        }
+      } else if (cmd === "flashcard_read_question") {
+        if (flashcard.totalCards > 0) {
+          flashcard.readQuestion();
+        }
+      } else if (cmd === "flashcard_read_answer") {
+        if (flashcard.totalCards > 0) {
+          flashcard.readAnswer();
+        }
+      } else if (cmd === "flashcard_show_answer") {
+        if (flashcard.totalCards > 0) {
+          flashcard.showAnswerAction();
+        }
+      } else if (cmd === "flashcard_show_question") {
+        if (flashcard.totalCards > 0) {
+          flashcard.showQuestionAction();
+        }
       }
 
       // 🔊 Play the returned TTS audio
@@ -144,17 +178,17 @@ export default function Index() {
       if (e.code === "Space") e.preventDefault();
 
       if (e.code === "Space" && !recording && !isPlaying) {
-        if (micPermissionStatus !== "granted") {
-          handlePlayAudio(micNotFoundAudio);
-          (
-            await navigator.mediaDevices.getUserMedia({
-              audio: true,
-            })
-          )
-            .getAudioTracks()
-            .forEach((track) => track.stop());
-          return;
-        }
+        //if (micPermissionStatus !== "granted") {
+        //  handlePlayAudio(micNotFoundAudio);
+        //  (
+        //    await navigator.mediaDevices.getUserMedia({
+        //      audio: true,
+        //    })
+        //  )
+        //    .getAudioTracks()
+        //    .forEach((track) => track.stop());
+        //  return;
+        //}
 
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
@@ -235,16 +269,24 @@ export default function Index() {
   }, [recording, isStarting]);
 
   return (
+    <main className="text-black dark:text-white">
+      <Navbar />
+      <main className="max-w-[1920px] mx-auto min-h-screen overflow-x-hidden flex flex-col items-center">
+        <Outlet />
+        <Toaster />
+      </main>
+      <Footer />
+    </main>
+  );
+}
+
+export default function Index() {
+  return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <AuthProvider>
-        <main className="text-black dark:text-white">
-          <Navbar />
-          <main className="max-w-[1920px] mx-auto min-h-screen overflow-x-hidden flex flex-col items-center">
-            <Outlet />
-            <Toaster />
-          </main>
-          <Footer />
-        </main>
+        <FlashcardProvider>
+          <MainContent />
+        </FlashcardProvider>
       </AuthProvider>
     </ThemeProvider>
   );
