@@ -31,6 +31,16 @@ export const MateriQNAModule = () => {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
+  const processMarkdown = (text: string) => {
+    let processed = text.replace(/\*\*(.*?)\*\*/g, "<em>$1</em>");
+
+    processed = processed.replace(
+      /\*(.*?)\*/g,
+      '<span class="font-semibold">$1</span>'
+    );
+    return processed;
+  };
+
   useEffect(() => {
     if (userQuestions) {
       const formattedMessages = userQuestions.map((qa, index) => ({
@@ -135,7 +145,12 @@ export const MateriQNAModule = () => {
                     <div className="flex justify-end">
                       <div className="flex items-start gap-3 max-w-[80%]">
                         <div className="bg-primary text-primary-foreground rounded-lg px-4 py-2">
-                          <p className="text-sm">{message.question}</p>
+                          <p
+                            className="text-sm"
+                            dangerouslySetInnerHTML={{
+                              __html: processMarkdown(message.question),
+                            }}
+                          />
                         </div>
                         <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
                           <User className="h-4 w-4" />
@@ -156,9 +171,12 @@ export const MateriQNAModule = () => {
                               <p className="text-sm">AI sedang menjawab...</p>
                             </div>
                           ) : (
-                            <p className="text-sm whitespace-pre-wrap">
-                              {message.answer}
-                            </p>
+                            <p
+                              className="text-sm whitespace-pre-wrap"
+                              dangerouslySetInnerHTML={{
+                                __html: processMarkdown(message.answer),
+                              }}
+                            />
                           )}
                         </div>
                       </div>
