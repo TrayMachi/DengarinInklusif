@@ -13,15 +13,11 @@ import { Navbar } from "~/components/Navbar";
 import { Footer } from "~/components/Footer";
 import { isAuthenticatedServer } from "~/utils/auth.server";
 import { useEffect, useRef, useState } from "react";
-import { validateCommand } from "~/utils/navigation";
+import { getRoute, validateCommand } from "~/utils/navigation";
 
-const pageRoutes: { [key: string]: (arg0?: any) => string } = {
-  lanpage: () => "/",
-  menu: () => "/menu",
-  material: () => "/menu/materi",
-  material_detail: (code: string) => `/menu/materi/${code}`,
-  settings: () => "/menu/pengaturan",
-};
+const HOLD_THRESHOLD = 300; // in ms
+const HOLD_OUT_DELAY = 300;
+const DOUBLE_PRESS_THRESHOLD = 300; // in ms
 
 export function ErrorBoundary() {
   return (
@@ -55,17 +51,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { pageCode } = useLoaderData<{ pageCode: string }>();
+
   const mediaRecorderRef = useRef<MediaRecorder>(null);
   const mediaStream = useRef<MediaStream>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const lastDownTime = useRef<number | null>(null);
+  const lastUpTime = useRef<number | null>(null);
+  const holdTimer = useRef<NodeJS.Timeout | null>(null);
+  const isHolding = useRef<boolean>(false);
+
   const navigate = useNavigate();
+
   const [recording, setRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isStarting, setIsStarting] = useState<boolean>(false);
   const [micPermissionStatus, setMicPermissionStatus] = useState<
     "prompt" | "granted" | "denied" | "unsupported"
   >("prompt");
-  const [hasAskedBefore, setHasAskedBefore] = useState<boolean>(false);
 
   const playBeep = () => {
     const ctx = new AudioContext();
@@ -77,15 +80,31 @@ export default function Index() {
     oscillator.stop(ctx.currentTime + 0.2);
   };
 
-  const handlePlayAudio = async (audio: HTMLAudioElement) => {
+  const handlePlayAudio = async () => {
+    if (!audioRef.current) {
+      console.error("Audio ref hasn't been set up");
+      return;
+    }
+
     setIsPlaying(true);
     try {
-      await audio.play();
+      await audioRef.current.play();
     } catch (error) {
       console.error("Audio autoplay was prevented:", error);
-    } finally {
-      setIsPlaying(false);
     }
+
+    audioRef.current.addEventListener("ended", handleStopAudio);
+  };
+
+  const handleStopAudio = () => {
+    if (!audioRef.current) {
+      console.error("Audio ref hasn't been set up");
+      return;
+    }
+
+    audioRef.current.pause();
+    audioRef.current = null;
+    setIsPlaying(false);
   };
 
   const sendAudioToCommandAPI = async (blob: Blob, pageCode: string) => {
@@ -117,113 +136,146 @@ export default function Index() {
       const commandArr = commandStr.split(" ");
 
       const cmd = commandArr[0];
-      const arg = commandArr[1];
+      const arg1 = commandArr[1];
+      const arg2 = commandArr.length > 2 ? commandArr[2] : "";
+      const arg3 = commandArr.length > 3 ? commandArr[3] : "";
 
       if (cmd === "navigate") {
-        if (commandArr.length > 2) {
-          const arg2 = commandArr[2];
-          navigate(pageRoutes[arg](arg2));
-        }
-        navigate(pageRoutes[arg]());
+        navigate(getRoute(arg1, arg2));
       }
 
       // 🔊 Play the returned TTS audio
       if (data.ttsAudio) {
         const audio = new Audio(`data:audio/mp3;base64,${data.ttsAudio}`);
-        handlePlayAudio(audio);
+        audioRef.current = audio;
+        handlePlayAudio();
       }
     } catch (error) {
       console.error("Error sending audio:", error);
     }
   };
 
-  useEffect(() => {
+  const handleSpaceHold = async () => {
+    if (audioRef.current !== null || isPlaying) return;
+
     const micNotFoundAudio = new Audio("/micnotfound.mp3");
 
-    const handleKeyDown = async (e: any) => {
-      if (e.code === "Space") e.preventDefault();
+    try {
+      const permission = await navigator.permissions.query({
+        name: "microphone",
+      });
 
-      if (e.code === "Space" && !recording && !isPlaying) {
-        if (micPermissionStatus !== "granted") {
-          handlePlayAudio(micNotFoundAudio);
-          (
-            await navigator.mediaDevices.getUserMedia({
-              audio: true,
-            })
-          )
-            .getAudioTracks()
-            .forEach((track) => track.stop());
-          return;
-        }
+      if (permission.state === "granted") {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
 
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
-          const mediaRecorder = new MediaRecorder(stream);
+        const mediaRecorder = new MediaRecorder(stream);
 
-          mediaRecorder.ondataavailable = (e) => {
-            if (e.data.size > 0) {
-              chunksRef.current.push(e.data);
-            }
-          };
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            chunksRef.current.push(e.data);
+          }
+        };
 
-          mediaRecorder.onstop = () => {
-            const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-            chunksRef.current = [];
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+          chunksRef.current = [];
 
-            sendAudioToCommandAPI(blob, pageCode);
-          };
+          sendAudioToCommandAPI(blob, pageCode);
+        };
 
-          mediaRecorder.onstart = () => {
-            setRecording(true);
-            setIsStarting(false);
-            playBeep();
-          };
-
-          mediaRecorderRef.current = mediaRecorder;
-          mediaStream.current = stream;
-          mediaRecorderRef.current.start();
-        } catch (err) {
-          alert("Microphone access denied");
-          await handlePlayAudio(micNotFoundAudio);
+        mediaRecorder.onstart = () => {
+          setRecording(true);
           setIsStarting(false);
-        }
+          playBeep();
+        };
+
+        mediaRecorderRef.current = mediaRecorder;
+        mediaStream.current = stream;
+        mediaRecorderRef.current.start();
+      } else if (permission.state === "prompt") {
+        audioRef.current = micNotFoundAudio;
+        handlePlayAudio();
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+
+        stream.getTracks().forEach((track) => track.stop());
+      } else if (permission.state === "denied") {
+        console.error("Izin mikrofon ditolak");
+        return;
+      }
+    } catch (err) {
+      alert("Izin mikrofon ditolak");
+
+      if (audioRef.current !== null && isPlaying) return;
+
+      audioRef.current = micNotFoundAudio;
+      await handlePlayAudio();
+      setIsStarting(false);
+    }
+  };
+
+  const handleSpaceDoublePress = async () => {
+    handleStopAudio();
+  };
+
+  useEffect(() => {
+    const handleKeyDown = async (e: any) => {
+      if (e.code !== "Space") return;
+
+      e.preventDefault();
+
+      const now = Date.now();
+
+      if (isHolding.current) return;
+
+      lastDownTime.current = now;
+
+      if (!recording && !isPlaying) {
+        holdTimer.current = setTimeout(() => {
+          isHolding.current = true;
+          handleSpaceHold();
+        }, HOLD_THRESHOLD);
       }
     };
 
     const handleKeyUp = (e: any) => {
-      if (e.code === "Space" && recording) {
-        // ⏳ Delay 500ms sebelum stop rekaman
-        setTimeout(() => {
-          mediaStream.current?.getTracks().forEach((track) => track.stop());
-          mediaRecorderRef.current?.stop();
-          setRecording(false);
-        }, 500);
+      if (e.code !== "Space") return;
+
+      e.preventDefault();
+
+      const now = Date.now();
+
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+        holdTimer.current = null;
+      }
+
+      const pressDuration = now - (lastDownTime.current ?? 0);
+      if (isHolding.current) {
+        if (recording) {
+          setTimeout(() => {
+            mediaStream.current?.getTracks().forEach((track) => track.stop());
+            mediaRecorderRef.current?.stop();
+            setRecording(false);
+          }, HOLD_THRESHOLD + HOLD_OUT_DELAY);
+        }
+        isHolding.current = false;
+      } else if (pressDuration < HOLD_THRESHOLD) {
+        if (
+          lastUpTime.current &&
+          now - lastUpTime.current < DOUBLE_PRESS_THRESHOLD
+        ) {
+          handleSpaceDoublePress();
+          lastUpTime.current = null;
+        } else {
+          lastUpTime.current = now;
+        }
       }
     };
-
-    const checkMicPermission = async () => {
-      if (!navigator.permissions) {
-        setMicPermissionStatus("unsupported");
-        return;
-      }
-
-      try {
-        const result = await navigator.permissions.query({
-          name: "microphone" as PermissionName,
-        });
-        setMicPermissionStatus(result.state as any);
-        result.onchange = () => {
-          setMicPermissionStatus(result.state as any);
-        };
-      } catch (e) {
-        console.warn("Permissions API not fully supported", e);
-        setMicPermissionStatus("unsupported");
-      }
-    };
-
-    checkMicPermission();
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
