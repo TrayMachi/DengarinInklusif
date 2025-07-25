@@ -60,7 +60,12 @@ export default function Index() {
   const chunksRef = useRef<Blob[]>([]);
   const navigate = useNavigate();
   const [recording, setRecording] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isStarting, setIsStarting] = useState<boolean>(false);
+  const [micPermissionStatus, setMicPermissionStatus] = useState<
+    "prompt" | "granted" | "denied" | "unsupported"
+  >("prompt");
+  const [hasAskedBefore, setHasAskedBefore] = useState<boolean>(false);
 
   const playBeep = () => {
     const ctx = new AudioContext();
@@ -70,6 +75,17 @@ export default function Index() {
     oscillator.connect(ctx.destination);
     oscillator.start();
     oscillator.stop(ctx.currentTime + 0.2);
+  };
+
+  const handlePlayAudio = async (audio: HTMLAudioElement) => {
+    setIsPlaying(true);
+    try {
+      await audio.play();
+    } catch (error) {
+      console.error("Audio autoplay was prevented:", error);
+    } finally {
+      setIsPlaying(false);
+    }
   };
 
   const sendAudioToCommandAPI = async (blob: Blob, pageCode: string) => {
@@ -90,10 +106,6 @@ export default function Index() {
         console.error("Command API error:", data.error);
         return;
       }
-
-      console.log("✅ Transcription:", data.transcription);
-      console.log("✅ Command:", data.command);
-      console.log("✅ Description:", data.description);
 
       const commandStr = data.command as string;
 
@@ -118,7 +130,7 @@ export default function Index() {
       // 🔊 Play the returned TTS audio
       if (data.ttsAudio) {
         const audio = new Audio(`data:audio/mp3;base64,${data.ttsAudio}`);
-        audio.play();
+        handlePlayAudio(audio);
       }
     } catch (error) {
       console.error("Error sending audio:", error);
@@ -126,19 +138,24 @@ export default function Index() {
   };
 
   useEffect(() => {
-    const audio = new Audio("/micnotfound.mp3");
-
-    const handlePlayAudio = async () => {
-      try {
-        await audio.play();
-      } catch (error) {
-        console.log("Audio autoplay was prevented:", error);
-      }
-    };
+    const micNotFoundAudio = new Audio("/micnotfound.mp3");
 
     const handleKeyDown = async (e: any) => {
-      if (e.code === "Space" && !recording && !isStarting) {
-        setIsStarting(true);
+      if (e.code === "Space") e.preventDefault();
+
+      if (e.code === "Space" && !recording && !isPlaying) {
+        if (micPermissionStatus !== "granted") {
+          handlePlayAudio(micNotFoundAudio);
+          (
+            await navigator.mediaDevices.getUserMedia({
+              audio: true,
+            })
+          )
+            .getAudioTracks()
+            .forEach((track) => track.stop());
+          return;
+        }
+
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
@@ -169,7 +186,7 @@ export default function Index() {
           mediaRecorderRef.current.start();
         } catch (err) {
           alert("Microphone access denied");
-          handlePlayAudio();
+          await handlePlayAudio(micNotFoundAudio);
           setIsStarting(false);
         }
       }
@@ -185,6 +202,28 @@ export default function Index() {
         }, 500);
       }
     };
+
+    const checkMicPermission = async () => {
+      if (!navigator.permissions) {
+        setMicPermissionStatus("unsupported");
+        return;
+      }
+
+      try {
+        const result = await navigator.permissions.query({
+          name: "microphone" as PermissionName,
+        });
+        setMicPermissionStatus(result.state as any);
+        result.onchange = () => {
+          setMicPermissionStatus(result.state as any);
+        };
+      } catch (e) {
+        console.warn("Permissions API not fully supported", e);
+        setMicPermissionStatus("unsupported");
+      }
+    };
+
+    checkMicPermission();
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
