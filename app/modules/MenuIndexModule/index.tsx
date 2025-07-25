@@ -1,3 +1,4 @@
+import { Calendar, Clock } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { getCurrentUser, type AuthUser } from "~/utils/auth.client";
@@ -70,21 +71,21 @@ export const MenuIndexModule = () => {
         {/* Header Section */}
         <div className="mb-8">
           <div className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-md p-6 md:p-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex flex-col lg:flex-row items-start md:items-center justify-between gap-6">
               {/* Welcome Message */}
               <div className="flex-1">
                 <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                  {getGreeting()}, {displayName}! 👋
+                  {getGreeting()}, {displayName}!
                 </h1>
                 <p className="text-muted-foreground text-lg">
                   Selamat datang kembali di dashboard Anda
                 </p>
                 <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
-                    📅 {formatDate(currentTime)}
+                    <Calendar size={16} /> {formatDate(currentTime)}
                   </span>
                   <span className="flex items-center gap-1">
-                    🕐 {formatTime(currentTime)} WIB
+                    <Clock size={16} /> {formatTime(currentTime)} WIB
                   </span>
                 </div>
               </div>

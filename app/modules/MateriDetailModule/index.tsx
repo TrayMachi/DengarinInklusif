@@ -76,7 +76,7 @@ export const MateriDetailModule = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col md:flex-row gap-2 mt-4">
+              <div className="grid grid-cols-1 lg:flex lg:flex-row gap-2 mt-4">
                 <Button
                   size="sm"
                   variant="outline"

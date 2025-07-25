@@ -68,7 +68,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
       <section className="w-full h-full py-12 md:py-10 lg:py-20">
         <div className="px-4 md:px-6 w-full">
           <div className="mx-auto">
-            <div className="flex justify-between mb-12">
+            <div className="flex max-md:flex-col justify-center max-md:items-center md:justify-between mb-12 max-md:w-full">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
                 Materi Kamu
               </h2>
@@ -76,6 +76,7 @@ export const MaterialsModule: React.FC<MaterialsModuleProps> = ({
                 variant={"secondary"}
                 onClick={() => navigate("/menu/materi/tambah")}
                 size="sm"
+                className="max-md:w-full"
               >
                 Tambahkan Materi
               </Button>

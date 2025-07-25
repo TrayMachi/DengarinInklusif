@@ -29,7 +29,7 @@ export const FlashcardModule = () => {
 
   if (!cards || cards.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="w-full max-w-xl mx-auto p-8 text-center">
           <CardHeader>
             <CardTitle>Tidak ada flashcard</CardTitle>
@@ -47,7 +47,7 @@ export const FlashcardModule = () => {
   const card = cards[flashcard.current];
 
   return (
-    <div className="flex items-center justify-center h-[70vh]">
+    <div className="flex items-center justify-center h-fit min-h-[70vh]">
       <Card className="w-full max-w-2xl mx-auto p-8 flex flex-col items-center justify-center shadow-xl !gap-0">
         <CardHeader className="w-full text-center">
           <CardTitle className="text-[16px] font-bold text-muted-foreground">
