@@ -7,7 +7,6 @@ import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Mic, MicOff, Send, Loader2, Bot, User } from "lucide-react";
 
-// Declare Speech Recognition types
 declare global {
   interface Window {
     SpeechRecognition: any;
@@ -31,9 +30,7 @@ export const MateriQNAModule = () => {
   const fetcher = useFetcher();
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Initialize messages from loader data
   useEffect(() => {
     if (userQuestions) {
       const formattedMessages = userQuestions.map((qa, index) => ({
@@ -46,10 +43,10 @@ export const MateriQNAModule = () => {
     }
   }, [userQuestions]);
 
-  // Handle form submission result
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
       if (fetcher.data.success) {
+        setMessages((prev) => prev.filter((msg) => !msg.isLoading));
         const newMessage: ChatMessage = {
           id: Date.now().toString(),
           question: fetcher.data.data.question,
@@ -58,22 +55,16 @@ export const MateriQNAModule = () => {
         };
         setMessages((prev) => [...prev, newMessage]);
         setQuestion("");
+      } else {
+        setMessages((prev) => prev.filter((msg) => !msg.isLoading));
       }
     }
   }, [fetcher.state, fetcher.data]);
-
-  // Auto scroll to bottom
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!question.trim() || fetcher.state === "submitting") return;
 
-    // Add temporary loading message
     const tempMessage: ChatMessage = {
       id: "temp-" + Date.now(),
       question: question,
@@ -87,13 +78,6 @@ export const MateriQNAModule = () => {
     formData.append("question", question);
     fetcher.submit(formData, { method: "POST" });
   };
-
-  // Remove loading message when new real message arrives
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.success) {
-      setMessages((prev) => prev.filter((msg) => !msg.isLoading));
-    }
-  }, [fetcher.state, fetcher.data]);
 
   if (!material) {
     return (
@@ -113,7 +97,7 @@ export const MateriQNAModule = () => {
   }
 
   return (
-    <main className="flex-1 w-full h-screen flex flex-col">
+    <main className="flex-1 w-full h-fit flex flex-col">
       <div className="px-4 md:px-6 w-full py-4 border-b">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4">
@@ -130,10 +114,10 @@ export const MateriQNAModule = () => {
         </div>
       </div>
 
-      <div className="flex-1 px-4 md:px-6 w-full">
-        <div className="max-w-4xl mx-auto h-full flex flex-col">
-          <ScrollArea className="flex-1 py-4" ref={scrollAreaRef}>
-            <div className="space-y-4">
+      <div className="flex flex-col px-4 md:px-6 w-full h-fit">
+        <div className="max-w-4xl mx-auto h-fit flex flex-col">
+          <div className="flex-1 py-4 overflow-y-hidden">
+            <div className="space-y-4 h-[500px] overflow-y-auto">
               {messages.length === 0 ? (
                 <div className="text-center py-8">
                   <Bot className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -183,9 +167,9 @@ export const MateriQNAModule = () => {
                 ))
               )}
             </div>
-          </ScrollArea>
+          </div>
 
-          <div className="py-4 border-t">
+          <div className="bottom-0 py-4 border-t">
             <form onSubmit={handleSubmit} className="flex gap-2">
               <div className="flex-1 relative">
                 <Input
@@ -208,10 +192,7 @@ export const MateriQNAModule = () => {
                   <Mic className="h-4 w-4" />
                 )}
               </Button>
-              <Button
-                type="submit"
-                disabled={fetcher.state === "submitting"}
-              >
+              <Button type="submit" disabled={fetcher.state === "submitting"}>
                 {fetcher.state === "submitting" ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
